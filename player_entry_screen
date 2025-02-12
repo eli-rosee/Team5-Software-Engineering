@@ -1,0 +1,335 @@
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QCheckBox, QGridLayout,QLineEdit,QSizePolicy
+from PyQt5.QtCore import Qt, QTimer,QMetaObject
+from functools import partial
+import sys
+import signal
+import keyboard
+
+def on_key_event(event):
+    #print(f"Key pressed: {event.name}")
+    if (event.name=="f3"):
+        print("Start game")
+    elif(event.name=="f1"):
+        print("Back to loading screen")
+    elif(event.name=="tab"):
+        #main_window.change_tab_ind()
+        QTimer.singleShot(0, main_window.change_tab_ind)  
+        #print(main_window.tab_ind)
+    elif(event.name=="esc"):
+        QApplication.quit()
+        sys.exit()
+
+
+class PlayerEntryScreen(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Player Entry Screen")
+        self.setGeometry(100, 100, 800, 600)
+        #self.showFullScreen()
+        self.setStyleSheet("background-color: black;")
+        self.tab_ind = 0
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.toggle_visibility)
+        self.timer.start(1)  
+        
+        main_layout = QVBoxLayout()
+        
+        self.title_label = QLabel("Player Entry Screen")
+        self.directions = QLabel("Enter a NEW PLAYER ID:")
+        self.directions.setAlignment(Qt.AlignCenter)
+        self.directions.setStyleSheet("background-color: black; color: white; height: 10px;")
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.title_label.setStyleSheet("font-size: 50px; font-weight: bold; color: blue;")
+        self.input_field = QLineEdit()
+        self.input_field.setStyleSheet("font-size: 20px; font-weight: bold; color: white;")
+        main_layout.addWidget(self.title_label)
+        main_layout.addWidget(self.directions)
+        main_layout.addWidget(self.input_field)
+        
+        teams_layout = QHBoxLayout()
+        
+        self.red_team_layout = QVBoxLayout()
+
+        self.red_team_title = QLabel("RED TEAM")
+        self.red_team_title.setAlignment(Qt.AlignCenter)
+        self.red_team_title.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: darkred;")
+        self.red_team_layout.addWidget(self.red_team_title)
+
+        self.red_team_info_layout = QHBoxLayout()
+
+        self.add_label = QLabel("ADD")
+        self.add_label.setFixedWidth(78)
+        self.add_label.setAlignment(Qt.AlignCenter)
+        self.add_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: darkred;")
+        self.add_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.red_team_info_layout.addWidget(self.add_label,0)
+
+        self.player_id_label = QLabel("PLAYER ID")
+        self.player_id_label.setAlignment(Qt.AlignCenter)
+        self.player_id_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: darkred;")
+        self.player_id_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.red_team_info_layout.addWidget(self.player_id_label,2)
+
+        self.equipment_id_label = QLabel("CODE NAME")
+        self.equipment_id_label.setAlignment(Qt.AlignCenter)
+        self.equipment_id_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: darkred;")
+        self.equipment_id_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.red_team_info_layout.addWidget(self.equipment_id_label,2)
+
+
+        self.red_team_layout.addLayout(self.red_team_info_layout)
+
+        
+        self.red_team_list = QGridLayout()
+        self.red_row = []
+        for i in range(15):
+            num_label = QLabel(f"{i}")
+            num_label.setStyleSheet("color: white;")
+            input_field1 = QLineEdit()
+            input_field2 = QLineEdit()
+            input_field1.setStyleSheet("background-color: white; color: black;")
+            input_field2.setStyleSheet("background-color: white; color: black;")
+            input_field2.setReadOnly(True)
+            """
+            if (i != 0):
+                input_field1.setReadOnly(True)
+                input_field2.setReadOnly(True)
+                
+            input_field1.setReadOnly(True)
+            """
+            arrow_label = QLabel(">>")  
+            arrow_label.setStyleSheet("font-weight: bold; color: black;")
+            checkbox = QCheckBox()
+            checkbox.setStyleSheet("margin-left: 5px;")
+
+            self.red_row.append((checkbox, arrow_label, num_label, input_field1, input_field2))
+            self.red_team_list.addWidget(arrow_label, i, 1)
+            self.red_team_list.addWidget(checkbox, i, 0)
+            self.red_team_list.addWidget(num_label, i, 2)
+            self.red_team_list.addWidget(input_field1, i, 3)
+            self.red_team_list.addWidget(input_field2, i, 4)
+            #input_field2.textChanged.connect(self.check_inputs)
+            # Connect stateChanged with partial to pass the checkbox itself
+            field=input_field1
+            field2=input_field2 
+            player_num=i
+            team="Red"
+            checkbox.stateChanged.connect(
+                partial(self.on_checkbox_toggled, checkbox, field, field2, player_num, team)
+            )
+            #checkbox.stateChanged.connect(lambda state, field=input_field1, field2=input_field2, player_num=i, team="Red": self.on_checkbox_toggled(state, field, field2, player_num, team))
+
+
+        self.red_team_layout.addLayout(self.red_team_list)
+        teams_layout.addLayout(self.red_team_layout)
+        
+        self.green_team_layout = QVBoxLayout()
+
+        self.green_team_title = QLabel("Green TEAM")
+        self.green_team_title.setAlignment(Qt.AlignCenter)
+        self.green_team_title.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: Green;")
+        self.green_team_layout.addWidget(self.green_team_title)
+
+        self.green_team_info_layout = QHBoxLayout()
+
+        self.player_id_label = QLabel("ADD")
+        self.player_id_label.setAlignment(Qt.AlignCenter)
+        self.player_id_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: Green;")
+        self.player_id_label.setFixedWidth(78)
+        self.green_team_info_layout.addWidget(self.player_id_label,0)
+
+        self.player_id_label = QLabel("PLAYER ID")
+        self.player_id_label.setAlignment(Qt.AlignCenter)
+        self.player_id_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: Green;")
+        self.green_team_info_layout.addWidget(self.player_id_label,2)
+
+        self.equipment_id_label = QLabel("CODE NAME")
+        self.equipment_id_label.setAlignment(Qt.AlignCenter)
+        self.equipment_id_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: Green;")
+        self.green_team_info_layout.addWidget(self.equipment_id_label,2)
+
+        self.green_team_layout.addLayout(self.green_team_info_layout)
+        
+        self.green_team_list = QGridLayout()
+        self.green_row = []
+        for i in range(15):
+            num_label = QLabel(f"{i}")
+            num_label.setStyleSheet("color: white;")
+            input_field1 = QLineEdit()
+            input_field2 = QLineEdit()
+            input_field1.setStyleSheet("background-color: white; color: black;")
+            input_field2.setStyleSheet("background-color: white; color: black;")
+            input_field2.setReadOnly(True)
+            """
+            if (i != 0):
+                input_field1.setReadOnly(True)
+                input_field2.setReadOnly(True)
+                
+            input_field1.setReadOnly(True)
+            """
+            arrow_label = QLabel(">>")  
+            arrow_label.setStyleSheet("font-weight: bold; color: black;")
+            checkbox = QCheckBox()
+            checkbox.setStyleSheet("margin-left: 5px;")
+            self.green_row.append((checkbox, arrow_label, num_label, input_field1, input_field2))
+            self.green_team_list.addWidget(checkbox, i, 0)
+            self.green_team_list.addWidget(arrow_label, i, 1)
+            self.green_team_list.addWidget(num_label, i, 2)
+            self.green_team_list.addWidget(input_field1, i, 3)
+            self.green_team_list.addWidget(input_field2, i, 4)
+            #input_field2.textChanged.connect(self.check_inputs)
+            field=input_field1
+            field2=input_field2 
+            player_num=i
+            team="Green"
+            checkbox.stateChanged.connect(
+                partial(self.on_checkbox_toggled, checkbox, field, field2, player_num, team)
+            )
+            #checkbox.stateChanged.connect(lambda state, field=input_field1, field2=input_field2, player_num=i, team="Green": self.on_checkbox_toggled(state, field, field2, player_num, team))
+
+
+        self.green_team_layout.addLayout(self.green_team_list)
+        teams_layout.addLayout(self.green_team_layout)
+        
+        main_layout.addLayout(teams_layout)
+        main_layout.addWidget(self.directions)
+        
+        self.button_layout = QHBoxLayout()
+        self.buttons = {}
+        button_labels = {
+                    30: "F1 Edit Game",
+                    31: "F2 Game Parameters",
+                    32: "F3 Start Game",
+                    33: "F5 PreEntered Games",
+                    34: "F7",
+                    35: "F8 View Game",
+                    36: "F10 Flick Sync",
+                    37: "F12 Clear Game"
+                }        
+        for index, label in button_labels.items():
+            button = QPushButton(label)
+            button.setStyleSheet("background-color: white; color: green; font-size: 12px;")
+            button.setFocusPolicy(Qt.StrongFocus)  
+            self.button_layout.addWidget(button)
+            self.buttons[index] = button 
+        
+        main_layout.addLayout(self.button_layout)
+        self.setLayout(main_layout)
+        
+
+        
+    def change_tab_ind(self):
+                main_window.tab_ind += 1
+                if (main_window.tab_ind == 38):
+                    main_window.tab_ind = 0
+
+                if (main_window.tab_ind < 30):
+                    if (main_window.tab_ind%2==0):
+                        target_input = self.red_row[(main_window.tab_ind) // 2][3]
+                        target_input.setFocus(True)  
+                        #print(target_input)
+                        QMetaObject.invokeMethod(target_input, "setFocus", Qt.QueuedConnection)
+                    elif(main_window.tab_ind%2==1):
+                        target_input = self.green_row[(main_window.tab_ind - 1) // 2][3]
+                        target_input.setFocus(True)  
+                        #print(target_input)
+                        QMetaObject.invokeMethod(target_input, "setFocus", Qt.QueuedConnection)
+
+
+                for button in self.buttons.values():
+                    button.setStyleSheet("background-color: white; color: green; font-size: 12px;")
+
+                if main_window.tab_ind in self.buttons:
+                    button = self.buttons[main_window.tab_ind]
+
+                    button.setStyleSheet("background-color: grey; color: black;")
+                    button.setDefault(True) 
+
+    def check_inputs(self):
+            for arrow_label, num_label, input1, input2 in self.red_row:
+                index = int(num_label.text())
+                if (input2.text().strip() != "" or index == 30):
+                    self.red_row[index+1][2].setReadOnly(False)
+
+            for arrow_label, num_label, input1, input2 in self.green_row:
+                index = int(num_label.text())
+                if  input2.text().strip() != "" or index == 30:
+                    self.green_row[index+1][2].setReadOnly(False)
+
+    def toggle_visibility(self):        
+            combined_rows = self.red_row + self.green_row  
+            
+            for index, (arrow_label, checkbox, num_label, input1, input2) in enumerate(combined_rows):
+                row_index = int(num_label.text()) if num_label.text() else index  
+
+                if main_window.tab_ind % 2 == 0:
+
+                    if (main_window.tab_ind // 2) < len(self.red_row):
+                        self.red_row[main_window.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
+                    
+                    if ((main_window.tab_ind - 1) // 2) < len(self.green_row):
+                        self.green_row[(main_window.tab_ind - 1) // 2][1].setStyleSheet("font-weight: bold; color: black;")
+
+                elif main_window.tab_ind % 2 == 1:
+
+                    if ((main_window.tab_ind - 1) // 2) < len(self.green_row):
+                        self.green_row[(main_window.tab_ind - 1) // 2][1].setStyleSheet("font-weight: bold; color: white;")
+                    
+                    if (main_window.tab_ind // 2) < len(self.red_row):
+                        self.red_row[main_window.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: black;")
+
+                else:
+                    if index // 2 < len(self.red_row):
+                        self.red_row[index // 2][1].setStyleSheet("font-weight: bold; color: black;")
+                    if index // 2 < len(self.green_row):
+                        self.green_row[index // 2][1].setStyleSheet("font-weight: bold; color: black;")
+
+    def on_checkbox_toggled(self, checkbox, field, field2, player_num, team, state):
+        print(f"Checkbox toggled for {team} Player {player_num}, State: {state}")  
+
+        player_id = field.text().strip()
+        code_name = field2.text().strip()
+
+        text = self.directions.text()
+        number = text.replace("Enter ", "").replace("'s CODE NAME:", "")
+       
+        if "CODE NAME:" in self.directions.text() and field.text() != number:
+                field.setText("")
+                checkbox.setCheckState(Qt.Unchecked)
+                return
+        elif player_id == "":
+                self.directions.setText("Player Does not have an ID")
+                checkbox.setCheckState(Qt.Unchecked)
+                return
+
+        elif code_name == "":  
+                field.setReadOnly(True)
+                self.directions.setText(f"Enter {player_id}'s CODE NAME:")
+                QMetaObject.invokeMethod(field2, "setFocus", Qt.QueuedConnection)
+                field2.setReadOnly(False)
+                checkbox.setCheckState(Qt.Unchecked)
+                return
+    
+        
+        self.directions.setText("Enter a NEW PLAYER ID:")
+        checkbox.setEnabled(False)
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    signal.signal(signal.SIGINT, signal.SIG_DFL) 
+    main_window = PlayerEntryScreen()
+    main_window.show()
+    QMetaObject.invokeMethod(main_window.red_row[0][3], "setFocus", Qt.QueuedConnection)
+    keyboard.on_press(on_key_event)
+    timer = QTimer()
+    timer.timeout.connect(main_window.toggle_visibility)
+    timer.start(100)
+
+    sys.exit(app.exec_())
