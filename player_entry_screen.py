@@ -484,7 +484,7 @@ class PlayerEntryScreen(QWidget):
                 return result[0] if result else None  # Return codename if found, otherwise None
             return None
 
-        def add_new_player(player_id, codename, equipment_id, team):
+        def add_new_player(player_id, codename):
             """Insert a new player into the database."""
             conn = connect()
             if conn:
