@@ -10,7 +10,6 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
   2. Install required libraries
      - sudo apt install python3-pyqt6
      - sudo apt install python3-pynput
-     - sudo apt install qtwayland6
      - sudo apt install python3-psycopg2 -y
     
   4. Running the application
