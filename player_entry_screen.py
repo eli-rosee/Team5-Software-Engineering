@@ -452,8 +452,6 @@ class PlayerEntryScreen(QWidget):
         equip_id = field3.text().strip()
 
         DB_NAME = "photon"
-        DB_USER = ""
-        DB_PASSWORD = ""  
         DB_HOST = "127.0.0.1"
         DB_PORT = "5432"  # PostgreSQL default port
 
@@ -463,8 +461,6 @@ class PlayerEntryScreen(QWidget):
             try:
                 conn = psycopg2.connect(
                     dbname=DB_NAME,
-                    user=DB_USER,
-                    password=DB_PASSWORD,
                     host=DB_HOST,
                     port=DB_PORT
                 )
@@ -514,7 +510,10 @@ class PlayerEntryScreen(QWidget):
 
         # Player Entry via Terminal Input
         print("\n--- Add Two Players ---")
-        connect()
+        # Test the connection
+        conn = connect()
+        if conn:
+            conn.close()
 
         if (1==2):
              field2.setText("")
