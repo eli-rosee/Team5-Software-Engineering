@@ -509,10 +509,9 @@ class PlayerEntryScreen(QWidget):
             return []
 
         # Player Entry via Terminal Input
-        if __name__ == "__main__":
-            print("\n--- Add Two Players ---")
+        print("\n--- Add Two Players ---")
 
-            for i in range(2):  # Loop to add two players
+        for i in range(2):  # Loop to add two players
                 while True:
                     try:
                         player_id = int(input(f"\nEnter Player {i+1} ID: "))
@@ -543,8 +542,8 @@ class PlayerEntryScreen(QWidget):
                     add_new_player(player_id, codename, equipment_id, team)
 
             # Show all players after addition
-            print("\nAll Players in Database:")
-            for p in get_all_players():
+        print("\nAll Players in Database:")
+        for p in get_all_players():
                 print(p)
 
         if (1==2):
