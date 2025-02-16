@@ -471,9 +471,9 @@ class PlayerEntryScreen(QWidget):
         if event.type() == QEvent.Type.MouseButtonPress:
             if isinstance(obj, QLineEdit):
                 for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
                 for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
+                     row[1].setText("")
                      
                 for row_index, row in enumerate(self.red_row):  
                     if obj in (row[3], row[4]):  
@@ -519,59 +519,67 @@ class PlayerEntryScreen(QWidget):
         if index == 30:  # F1 Edit Game
             print("Editing Game...")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
+                     row[1].setText("")
             QTimer.singleShot(0, lambda: self.tab_to_target_red(30, 0))  
+            main_window.tab_ind = 30
         elif index == 31:  # F2 Game Parameters
             print("Adjusting Game Parameters...")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
+                     row[1].setText("")
             QTimer.singleShot(0, lambda: self.tab_to_target_red(31, 0)) 
+            main_window.tab_ind = 31
         elif index == 32:  # F3 Start Game
             print("Starting Game...")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
+                     row[1].setText("")
             QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
+            main_window.tab_ind = 32
         elif index == 33:  # F5 PreEntered Games
             print("Viewing PreEntered Games...")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
+                     row[1].setText("")
             QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
+            main_window.tab_ind = 33
         elif index == 34:  # F7
             print("F7 Action Triggered")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(34, 0))             
+                     row[1].setText("")
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(34, 0))     
+            main_window.tab_ind = 34        
         elif index == 35:  # F8 View Game
             print("Viewing Game...")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(35, 0))             
+                     row[1].setText("")
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(35, 0))     
+            main_window.tab_ind = 35        
         elif index == 36:  # F10 Flick Sync
             print("Performing Flick Sync...")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(36, 0))             
+                     row[1].setText("")
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(36, 0))
+            main_window.tab_ind = 36             
         elif index == 37:  # F12 Clear Game
             print("Clearing Game...")
             for row_index, row in enumerate(self.red_row): 
-                     row[1].setText("  ")
+                     row[1].setText("")
             for row_index, row in enumerate(self.green_row):  
-                     row[1].setText("  ")
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(37, 0))             
+                     row[1].setText("")
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(37, 0))       
+            main_window.tab_ind = 37      
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
