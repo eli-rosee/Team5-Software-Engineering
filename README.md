@@ -6,20 +6,11 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - Install Virtual Box if you haven't already
      - Download a Debian amd64 .iso from the Debian webiste
      - Create a new virtual machine in Virtual Box and install Debian
-       
-  2. Enable pip for Python Package installations and management
-     - sudo apt update
-     - sudo apt install python3-pip -y
-     - pip3 --version (check for correct installation)
-      
-  3. Create a virtual environment
-     - python3 -m venv venv
-     - source venv/bin/activate
+
+  2. Install required libraries
+     - sudo apt install python3-pyqt6
+     - sudo apt install python3-pynput
+     - sudo apt install qtwayland6
     
-  4. Install required libraries
-     - pip install PyQt6
-     - pip install keyboard
-     - pip install pynup
-    
-  5. Running the application
+  4. Running the application
      - python3 main.py
