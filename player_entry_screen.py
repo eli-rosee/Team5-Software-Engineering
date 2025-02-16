@@ -270,6 +270,7 @@ class PlayerEntryScreen(QWidget):
                         target_input.setFocus()  
                         #print(target_input)
                         QMetaObject.invokeMethod(target_input, "setFocus", Qt.ConnectionType.QueuedConnection)
+                        self.red_row[(main_window.tab_ind) // 2][1].setText(">>")
                     elif(main_window.tab_ind%2==1):
                         if(self.green_row[(main_window.tab_ind) // 2][3].text() == ""):
                             target_input = self.green_row[(main_window.tab_ind) // 2][3]
@@ -278,6 +279,7 @@ class PlayerEntryScreen(QWidget):
                         target_input.setFocus()  
                         #print(target_input)
                         QMetaObject.invokeMethod(target_input, "setFocus", Qt.ConnectionType.QueuedConnection)
+                        self.green_row[(main_window.tab_ind) // 2][1].setText(">>")
 
 
                 for button in self.buttons.values():
@@ -477,12 +479,14 @@ class PlayerEntryScreen(QWidget):
                      
                 for row_index, row in enumerate(self.red_row):  
                     if obj in (row[3], row[4]):  
+                        main_window.tab_ind = row_index * 2 + 1 
                         row[1].setText(">>")
                         self.tab_to_target_red(row_index * 2)
                         return True
                 
                 for row_index, row in enumerate(self.green_row):  
                     if obj in (row[3], row[4]):  
+                        main_window.tab_ind = row_index * 2 + 1 
                         row[1].setText(">>")
                         self.tab_to_target_green(row_index * 2 + 1)
                         return True  
