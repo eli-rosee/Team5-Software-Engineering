@@ -489,6 +489,11 @@ class PlayerEntryScreen(QWidget):
                         row[1].setStyleSheet("color: white;")
                         self.tab_to_target_green(row_index * 2 + 1)
                         return True  
+                    
+                for row_index, row in enumerate(self.red_row): 
+                     row[1].setStyleSheet("color: black;")
+                for row_index, row in enumerate(self.green_row):  
+                     row[1].setStyleSheet("color: black;")
 
         return super().eventFilter(obj, event)  
     
