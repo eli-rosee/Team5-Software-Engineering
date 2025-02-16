@@ -39,16 +39,9 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # Start the server in a separate thread
+    server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
 
-	server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
-
-	server_thread.start()
-
-	
-
-	splash_window = splash.MainWindow()
-
-	splash_window.show()
+    server_thread.start()
     
     splash_window = splash.MainWindow()
     splash_window.show()
