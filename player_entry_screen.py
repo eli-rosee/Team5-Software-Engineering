@@ -4,6 +4,8 @@ from functools import partial
 import sys
 import signal
 from pynput import keyboard
+import psycopg2
+from psycopg2 import sql
 
 
 
@@ -17,7 +19,6 @@ def on_key_event(key):
             print("Back to loading screen")
         elif key == keyboard.Key.tab:
             #main_window.change_tab_ind()
-            print("tab")
             QTimer.singleShot(0, self.change_tab_ind)  
             #print(main_window.tab_ind)
         elif key == keyboard.Key.esc:
@@ -363,7 +364,6 @@ class PlayerEntryScreen(QWidget):
                     if (self.tab_ind // 2) < len(self.red_row):
                         #self.red_row[main_window.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
                         self.red_row[self.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
-                        print("test")
                     
                     if ((self.tab_ind - 1) // 2) < len(self.green_row):
                         self.green_row[(self.tab_ind - 1) // 2][1].setStyleSheet("font-weight: bold; color: black;")
@@ -372,8 +372,7 @@ class PlayerEntryScreen(QWidget):
 
                     if ((self.tab_ind - 1) // 2) < len(self.green_row):
                         #self.green_row[(main_window.tab_ind - 1) // 2][1].setStyleSheet("font-weight: bold; color: white;")
-                        self.red_row[self.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
-                        print("test")
+                        self.green_row[self.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
                     
                     if (self.tab_ind // 2) < len(self.red_row):
                         self.red_row[self.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: black;")
@@ -447,6 +446,61 @@ class PlayerEntryScreen(QWidget):
                             break 
 
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
+        #database check here
+
+        # ✅ Define correct connection parameters
+        """
+        connection_params = {
+            'dbname': 'photon',  # Ensure this database exists  # Uncomment and add password if required
+            'host': 'localhost',   # Change if connecting to a remote DB
+            'port': '5432'         # Default PostgreSQL port
+        }
+
+        try:
+            conn = psycopg2.connect(**connection_params)
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT version();")
+            version = cursor.fetchone()
+            print(f"Connected to - {version[0]}")
+
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS players (
+                    id SERIAL PRIMARY KEY,
+                    codename VARCHAR(100) UNIQUE NOT NULL
+                );
+            ''')
+            conn.commit()
+
+            try:
+                cursor.execute('''
+                    INSERT INTO players (id, codename)
+                    VALUES (%s, %s)
+                    ON CONFLICT (codename) DO NOTHING;  -- Prevent duplicate insert
+                ''', (500, 'BhodiLi'))
+                conn.commit()
+            except psycopg2.IntegrityError:
+                print("Duplicate entry, skipping insert.")
+
+            cursor.execute("SELECT * FROM players;")
+            rows = cursor.fetchall()
+            print("\nPlayers List:")
+            for row in rows:
+                print(row)
+
+        except Exception as error:
+            print(f"Error connecting to PostgreSQL: {error}")
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+            print("🔌 PostgreSQL connection closed.")
+"""
+        if (1==2):
+             field2.setText("")
+
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
@@ -533,15 +587,15 @@ class PlayerEntryScreen(QWidget):
     def process_equipment_id(self, popup, player_id, code_name, equipment_id):
         if not player_id or not code_name or not equipment_id:
             print("⚠️ All fields must be filled!")
-            return  # Stop function if any field is missing
+            return  
 
         try:
-            player_id = int(player_id)  # Ensure it's an integer
+            player_id = int(player_id)  
         except ValueError:
             print("⚠️ Player ID must be a number!")
             return
 
-        team = "red" if player_id % 2 == 0 else "green"  # Determine team
+        team = "red" if player_id % 2 == 0 else "green"  
 
 
         popup.accept()
