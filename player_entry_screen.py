@@ -490,8 +490,8 @@ class PlayerEntryScreen(QWidget):
             if conn:
                 cursor = conn.cursor()
                 cursor.execute(
-                    "INSERT INTO players (player_id, codename, equipment_id, team) VALUES (%s, %s, %s, %s);",
-                    (player_id, codename, equipment_id, team),
+                    "INSERT INTO players (player_id, codename, equipment_id, team) VALUES (%s, %s);",
+                    (player_id, codename),
                 )
                 conn.commit()
                 cursor.close()
@@ -513,7 +513,7 @@ class PlayerEntryScreen(QWidget):
         # Player Entry via Terminal Input
         conn = connect()
         if conn:
-            add_new_player("player_id", "codename", "equipment_id", "team")
+            add_new_player(player_id, code_name)
             #get_player_by_id(player_id)
             if (1==2):
                 field2.setText("")
