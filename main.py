@@ -5,6 +5,8 @@ import player_entry_screen
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer, QMetaObject, Qt
 from pynput import keyboard
+import threading
+import server  # Import the server module
 
 main_window = None
 
@@ -28,9 +30,25 @@ def on_key_event(key):
     except AttributeError:
         print("Error: Key press event encountered an issue")
 
+
+def start_server_in_thread():
+	""" Function to start the server in a separate thread """
+	server.start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
+    # Start the server in a separate thread
+
+	server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
+
+	server_thread.start()
+
+	
+
+	splash_window = splash.MainWindow()
+
+	splash_window.show()
     
     splash_window = splash.MainWindow()
     splash_window.show()
