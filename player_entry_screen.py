@@ -18,12 +18,16 @@ def on_key_event(event):
         QTimer.singleShot(0, main_window.change_tab_ind)  
         #print(main_window.tab_ind)
     elif(event.name=="esc"):
-        QApplication.quit()
-        sys.exit()
+        QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
+        QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
     elif(event.name=="enter"):
         #print("test")
         if not main_window.popup_active:  
             QTimer.singleShot(0, main_window.add_player_by_key)
+    else:  
+        if(1==2):
+             print("test")
+        #name
 
 
 class PlayerEntryScreen(QWidget):
@@ -107,7 +111,7 @@ class PlayerEntryScreen(QWidget):
             arrow_label = QLabel(">>")  
             arrow_label.setStyleSheet("font-weight: bold; color: black;")
             checkbox = QCheckBox()
-            checkbox.setStyleSheet("margin-left: 5px;")
+            checkbox.setStyleSheet("color: white; margin-left: 5px;")
 
             self.red_row.append((checkbox, arrow_label, num_label, input_field1, input_field2))
             self.red_team_list.addWidget(arrow_label, i, 1)
@@ -426,7 +430,7 @@ class PlayerEntryScreen(QWidget):
             popup = QDialog(self)
             popup.setWindowTitle("Enter Equipment ID")
             popup.setModal(True)  
-            popup.setStyleSheet("background-color: black;")
+            popup.setStyleSheet("background-color: black; color: white;")  
             popup.resize(400, 200)  
 
             layout = QVBoxLayout()
@@ -530,7 +534,6 @@ class PlayerEntryScreen(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    signal.signal(signal.SIGINT, signal.SIG_DFL) 
     main_window = PlayerEntryScreen()
     main_window.show()
     QMetaObject.invokeMethod(main_window.red_row[0][3], "setFocus", Qt.ConnectionType.QueuedConnection)
