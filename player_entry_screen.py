@@ -462,6 +462,8 @@ class PlayerEntryScreen(QWidget):
                 conn = psycopg2.connect(
                     dbname=DB_NAME,
                     host=DB_HOST,
+                    username="student",
+                    password="student",
                     port=DB_PORT
                 )
                 print("Connected to PostgreSQL successfully!")
@@ -509,14 +511,13 @@ class PlayerEntryScreen(QWidget):
             return []
 
         # Player Entry via Terminal Input
-        print("\n--- Add Two Players ---")
-        # Test the connection
         conn = connect()
         if conn:
+            add_new_player("player_id", "codename", "equipment_id", "team")
+            #get_player_by_id(player_id)
+            if (1==2):
+                field2.setText("")
             conn.close()
-
-        if (1==2):
-             field2.setText("")
 
 
         text = self.directions.text()
