@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLay
 from PyQt6.QtCore import Qt, QTimer,QMetaObject,QEvent
 from functools import partial
 import sys
-import signal
 import keyboard
 
 
@@ -111,6 +110,7 @@ class PlayerEntryScreen(QWidget):
             arrow_label = QLabel(">>")  
             arrow_label.setStyleSheet("font-weight: bold; color: black;")
             checkbox = QCheckBox()
+            QApplication.setStyle("windows")  
             checkbox.setStyleSheet("color: white; margin-left: 5px;")
 
             self.red_row.append((checkbox, arrow_label, num_label, input_field1, input_field2))
@@ -181,7 +181,8 @@ class PlayerEntryScreen(QWidget):
             arrow_label = QLabel(">>")  
             arrow_label.setStyleSheet("font-weight: bold; color: black;")
             checkbox = QCheckBox()
-            checkbox.setStyleSheet("margin-left: 5px;")
+            QApplication.setStyle("windows")  
+            checkbox.setStyleSheet("color: white; margin-left: 5px;")
             self.green_row.append((checkbox, arrow_label, num_label, input_field1, input_field2))
             self.green_team_list.addWidget(checkbox, i, 0)
             self.green_team_list.addWidget(arrow_label, i, 1)
@@ -470,11 +471,14 @@ class PlayerEntryScreen(QWidget):
         if event.type() == QEvent.Type.MouseButtonPress:
             if isinstance(obj, QLineEdit):  
                 for row_index, row in enumerate(self.red_row):  
+                    row[1].setText("")
                     if obj in (row[3], row[4]):  
+                        row[1].setText(">>")
                         self.tab_to_target_red(row_index * 2)
                         return True
                 
                 for row_index, row in enumerate(self.green_row):  
+                    row[1].setText(">>")
                     if obj in (row[3], row[4]):  
                         self.tab_to_target_green(row_index * 2 + 1)
                         return True  
@@ -500,6 +504,7 @@ class PlayerEntryScreen(QWidget):
                 extra_steps -= 1  
             
             QTimer.singleShot(0, lambda: self.tab_to_target_green(target_index, extra_steps)) 
+
     def install_button_event_listeners(self):
         for index, button in self.buttons.items():
             button.clicked.connect(partial(self.on_button_clicked, index, button))
