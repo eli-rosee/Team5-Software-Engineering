@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLay
 from PyQt6.QtCore import Qt, QTimer,QMetaObject,QEvent
 from functools import partial
 import sys
+import signal
 from pynput import keyboard
 
 
@@ -530,10 +531,32 @@ class PlayerEntryScreen(QWidget):
             self.popup_active = False 
 
     def process_equipment_id(self, popup, player_id, code_name, equipment_id):
-            if equipment_id.strip() == "":
-                return
+        if not player_id or not code_name or not equipment_id:
+            print("⚠️ All fields must be filled!")
+            return  # Stop function if any field is missing
 
-            popup.accept()  
+        try:
+            player_id = int(player_id)  # Ensure it's an integer
+        except ValueError:
+            print("⚠️ Player ID must be a number!")
+            return
+
+        team = "red" if player_id % 2 == 0 else "green"  # Determine team
+
+        existing_player = get_player_by_id(player_id)  # Check if player exists
+
+        if existing_player:
+            print(f"⚠️ Player {player_id} already exists in the database.")
+        else:
+            add_new_player(player_id, code_name, int(equipment_id), team)
+            print(f"✅ Player {player_id} ({code_name}) added to the database!")
+
+            # ✅ Send Equipment ID over UDP after adding the player
+            self.send_equipment_id(equipment_id)  # Use `self.`
+            print(f"📡 Sent equipment ID {equipment_id} over UDP")
+
+        popup.accept()
+  
 
     def install_input_event_listeners(self):
             for row in self.red_row + self.green_row: 
