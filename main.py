@@ -2,34 +2,60 @@ import sys
 import signal
 import splash
 import player_entry_screen
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QTimer, QMetaObject, Qt
+from pynput import keyboard
+
+main_window = None
+
+def on_key_event(key):
+    """ Global function to handle keyboard events """
+    global main_window  
+
+    try:
+        if key == keyboard.Key.f3:
+            print("Start game")
+        elif key == keyboard.Key.f1:
+            print("Back to loading screen")
+        elif key == keyboard.Key.tab:
+            print("Tab pressed")
+            QTimer.singleShot(0, main_window.change_tab_ind)  
+        elif key == keyboard.Key.esc:
+            QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
+            QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
+        elif key == keyboard.Key.enter:
+            QTimer.singleShot(0, main_window.add_player_by_key)
+    except AttributeError:
+        print("Error: Key press event encountered an issue")
 
 if __name__ == "__main__":
-    app = splash.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
-    # Initialize splash screen
+    
     splash_window = splash.MainWindow()
     splash_window.show()
 
-    # Function to transition to player entry screen
+    transition_timer = QTimer()
+
     def transition_to_player_entry():
+        global main_window  
+
+        transition_timer.stop()
         splash_window.close()
 
-        # Initialize player entry screen
         main_window = player_entry_screen.PlayerEntryScreen()
         main_window.showMaximized()
 
-        # Capture keyboard events
-        player_entry_screen.QMetaObject.invokeMethod(main_window.red_row[0][3], "setFocus", player_entry_screen.Qt.ConnectionType.QueuedConnection)
+        QMetaObject.invokeMethod(
+            main_window.red_row[0][3], "setFocus", Qt.ConnectionType.QueuedConnection
+        )
 
-    listener = player_entry_screen.keyboard.Listener(player_entry_screen.on_key_event)
-    listener.start()
+        listener = keyboard.Listener(on_press=on_key_event)
+        listener.start()
 
-    # Start timer to transition after 3 seconds
-    transition_timer = player_entry_screen.QTimer()
     transition_timer.timeout.connect(transition_to_player_entry)
-    transition_timer.start(3000)
+    transition_timer.start(3000)  
 
-    # Handle SIGINT (Ctrl+C) for safe termination
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     sys.exit(app.exec())
