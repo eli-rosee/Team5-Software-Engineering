@@ -7,6 +7,22 @@ import time
 #no need to use trafficgenerator it has the same functionality
 class PhotonNetwork:
     def __init__(self, server_ip="127.0.0.1", server_port=7500, client_ip="127.0.0.1", client_port=7501):
+        
+        #initialize client with network selection
+        if client_ip == "0.0.0.0":
+            print("Available network interfaces:")
+            hostname = socket.gethostname()
+            ips = socket.gethostbyname_ex(hostname)[2]
+            for idx, ip in enumerate(ips):
+                print(f"{idx + 1}: {ip}")
+
+            choice = input("Select network interface (enter number): ")
+            try:
+                client_ip = ips[int(choice) - 1]
+            except (IndexError, ValueError):
+                print("Invalid selection. Defaulting to 127.0.0.1")
+                client_ip = "127.0.0.1"
+        
         self.serverAddressPort = (server_ip, server_port)
         self.clientAddressPort = (client_ip, client_port)
 
