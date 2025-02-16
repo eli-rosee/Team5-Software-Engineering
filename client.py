@@ -8,21 +8,6 @@ import time
 class PhotonNetwork:
     def __init__(self, server_ip="127.0.0.1", server_port=7500, client_ip="127.0.0.1", client_port=7501):
         
-        #initialize client with network selection
-        if client_ip == "0.0.0.0":
-            print("Available network interfaces:")
-            hostname = socket.gethostname()
-            ips = socket.gethostbyname_ex(hostname)[2]
-            for idx, ip in enumerate(ips):
-                print(f"{idx + 1}: {ip}")
-
-            choice = input("Select network interface (enter number): ")
-            try:
-                client_ip = ips[int(choice) - 1]
-            except (IndexError, ValueError):
-                print("Invalid selection. Defaulting to 127.0.0.1")
-                client_ip = "127.0.0.1"
-        
         self.serverAddressPort = (server_ip, server_port)
         self.clientAddressPort = (client_ip, client_port)
 
@@ -110,7 +95,8 @@ class PhotonNetwork:
 # Example usage
 if __name__ == "__main__":
     # Start the client
-    photon_network = PhotonNetwork()
+    server_ip = input("Enter server IP (default is 127.0.0.1): ") or "127.0.0.1"
+    photon_network = PhotonNetwork(server_ip=server_ip)
 
     try:
         # Initialize player equipment IDs
