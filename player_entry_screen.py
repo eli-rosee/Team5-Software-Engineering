@@ -447,6 +447,10 @@ class PlayerEntryScreen(QWidget):
 
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
         #database check here
+        player_id = field.text().strip()
+        code_name = field2.text().strip()
+        equip_id = field3.text().strip()
+
         DB_NAME = "photon"
         DB_USER = ""
         DB_PASSWORD = ""  
@@ -510,48 +514,11 @@ class PlayerEntryScreen(QWidget):
 
         # Player Entry via Terminal Input
         print("\n--- Add Two Players ---")
-
-        for i in range(2):  # Loop to add two players
-                while True:
-                    try:
-                        player_id = int(input(f"\nEnter Player {i+1} ID: "))
-                        break
-                    except ValueError:
-                        print("Invalid input. Please enter an integer for Player ID.")
-
-                codename = input(f"Enter Player {i+1} Codename: ")
-
-                while True:
-                    try:
-                        equipment_id = int(input(f"Enter Player {i+1} Equipment ID: "))
-                        break
-                    except ValueError:
-                        print("Invalid input. Please enter an integer for Equipment ID.")
-
-                while True:
-                    team = input(f"Enter Player {i+1} Team (red/green): ").strip().lower()
-                    if team in ["red", "green"]:
-                        break
-                    print("Invalid input. Team must be 'red' or 'green'.")
-
-                # Check if player already exists
-                existing_player = get_player_by_id(player_id)
-                if existing_player:
-                    print(f"Player {player_id} already exists with codename: {existing_player}")
-                else:
-                    add_new_player(player_id, codename, equipment_id, team)
-
-            # Show all players after addition
-        print("\nAll Players in Database:")
-        for p in get_all_players():
-                print(p)
+        connect()
 
         if (1==2):
              field2.setText("")
 
-        player_id = field.text().strip()
-        code_name = field2.text().strip()
-        equip_id = field3.text().strip()
 
         text = self.directions.text()
         number = text.replace("Enter ", "").replace("'s CODE NAME:", "")
