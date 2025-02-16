@@ -39,6 +39,7 @@ class PlayerEntryScreen(QWidget):
         self.tab_ind = 0
         self.popup_active = False 
         self.last_player_id = None
+        QApplication.setStyle("windows")  
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.toggle_visibility)
@@ -110,7 +111,6 @@ class PlayerEntryScreen(QWidget):
             arrow_label = QLabel(">>")  
             arrow_label.setStyleSheet("font-weight: bold; color: black;")
             checkbox = QCheckBox()
-            QApplication.setStyle("windows")  
             checkbox.setStyleSheet("color: white; margin-left: 5px;")
 
             self.red_row.append((checkbox, arrow_label, num_label, input_field1, input_field2))
@@ -181,7 +181,6 @@ class PlayerEntryScreen(QWidget):
             arrow_label = QLabel(">>")  
             arrow_label.setStyleSheet("font-weight: bold; color: black;")
             checkbox = QCheckBox()
-            QApplication.setStyle("windows")  
             checkbox.setStyleSheet("color: white; margin-left: 5px;")
             self.green_row.append((checkbox, arrow_label, num_label, input_field1, input_field2))
             self.green_team_list.addWidget(checkbox, i, 0)
