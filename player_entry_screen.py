@@ -462,7 +462,7 @@ class PlayerEntryScreen(QWidget):
                 conn = psycopg2.connect(
                     dbname=DB_NAME,
                     host=DB_HOST,
-                    username="student",
+                    user="student",
                     password="student",
                     port=DB_PORT
                 )
