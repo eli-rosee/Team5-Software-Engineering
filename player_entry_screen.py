@@ -530,6 +530,8 @@ class PlayerEntryScreen(QWidget):
                      row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
                      row[1].setStyleSheet("color: black;")
+
+            QApplication.processEvents()
             main_window.tab_ind = 30 
             QTimer.singleShot(0, lambda: self.tab_to_target_red(30, 0))  
             
@@ -540,6 +542,7 @@ class PlayerEntryScreen(QWidget):
             for row_index, row in enumerate(self.green_row):  
                     row[1].setStyleSheet("color: black;")
             main_window.tab_ind = 31
+            QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(31, 0)) 
         elif index == 32:  # F3 Start Game
             print("Starting Game...")
@@ -548,6 +551,7 @@ class PlayerEntryScreen(QWidget):
             for row_index, row in enumerate(self.green_row):  
                     row[1].setStyleSheet("color: black;")
             main_window.tab_ind = 32
+            QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
         elif index == 33:  # F5 PreEntered Games
             print("Viewing PreEntered Games...")
@@ -556,6 +560,7 @@ class PlayerEntryScreen(QWidget):
             for row_index, row in enumerate(self.green_row):  
                     row[1].setStyleSheet("color: black;")
             main_window.tab_ind = 33
+            QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
         elif index == 34:  # F7
             print("F7 Action Triggered")
@@ -564,6 +569,7 @@ class PlayerEntryScreen(QWidget):
             for row_index, row in enumerate(self.green_row):  
                     row[1].setStyleSheet("color: black;")
             main_window.tab_ind = 34
+            QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(34, 0))            
         elif index == 35:  # F8 View Game
             print("Viewing Game...")
@@ -572,6 +578,7 @@ class PlayerEntryScreen(QWidget):
             for row_index, row in enumerate(self.green_row):  
                     row[1].setStyleSheet("color: black;")
             main_window.tab_ind = 35
+            QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(35, 0))           
         elif index == 36:  # F10 Flick Sync
             print("Performing Flick Sync...")
@@ -581,14 +588,15 @@ class PlayerEntryScreen(QWidget):
                     row[1].setStyleSheet("color: black;")
             QTimer.singleShot(0, lambda: self.tab_to_target_red(36, 0))
             main_window.tab_ind = 36   
-            main_window.tab_ind = 36             
+            QApplication.processEvents()           
         elif index == 37:  # F12 Clear Game
             print("Clearing Game...")
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
                     row[1].setStyleSheet("color: black;")
-            main_window.tab_ind = 37    
+            main_window.tab_ind = 37   
+            QApplication.processEvents() 
             QTimer.singleShot(0, lambda: self.tab_to_target_red(37, 0))         
 
 if __name__ == "__main__":
