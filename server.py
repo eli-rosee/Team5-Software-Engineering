@@ -54,17 +54,17 @@ def start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501):
                 else:
                     message = f"{green_equip_id}:{red_equip_id}"
                 print(f"Generated traffic: {message}")
-                server_socket.sendto(message.encode('utf-8'), ("127.0.0.1", client_port))
+                server_socket.sendto(message.encode('utf-8'), (client_address[0], client_port))
     
                 # Simulate base hits after specific iterations using equipment IDs
                 if counter == 10:
                     base_hit_message = f"{red_equip_id}:43"  # Red team base hit
                     print(f"Generated base hit: {base_hit_message}")
-                    server_socket.sendto(base_hit_message.encode('utf-8'), ("127.0.0.1", client_port))
+                    server_socket.sendto(base_hit_message.encode('utf-8'), (client_address[0], client_port))
                 elif counter == 20:
                     base_hit_message = f"{green_equip_id}:53"  # Green team base hit
                     print(f"Generated base hit: {base_hit_message}")
-                    server_socket.sendto(base_hit_message.encode('utf-8'), ("127.0.0.1", client_port))
+                    server_socket.sendto(base_hit_message.encode('utf-8'), (client_address[0], client_port))
     
                 counter += 1
                 time.sleep(random.randint(1, 3))  # Wait 1-3 seconds between messages
