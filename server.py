@@ -44,11 +44,15 @@ def start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501):
                 red_player = random.choice(player_ids)
                 green_player = random.choice(player_ids)
 
-                # Simulate interactions between players
+                # Look up the equipment IDs for the selected players
+                red_equip_id, _ = player_equipment_map[red_player]
+                green_equip_id, _ = player_equipment_map[green_player]
+
+                # Simulate interactions between players using their equipment IDs
                 if random.randint(1, 2) == 1:
-                    message = f"{red_player}:{green_player}"
+                    message = f"{red_equip_id}:{green_equip_id}"
                 else:
-                    message = f"{green_player}:{red_player}"
+                    message = f"{green_equip_id}:{red_equip_id}"
                 print(f"Generated traffic: {message}")
                 server_socket.sendto(message.encode('utf-8'), ("127.0.0.1", client_port))
 
