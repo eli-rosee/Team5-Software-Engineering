@@ -35,39 +35,39 @@ def start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501):
     # Dictionary to store player_id to (equip_id, player_name) mappings
     player_equipment_map = {}  # {player_id: (equip_id, player_name)}
 
-    def generate_traffic():
-        """Generate random traffic and send it to the client."""
-        counter = 0
-        while True:
-            if len(player_equipment_map) >= 2:  # Start generating traffic after 2 players register
-                player_ids = list(player_equipment_map.keys())
-                red_player = random.choice(player_ids)
-                green_player = random.choice(player_ids)
+def generate_traffic():
+    """Generate random traffic and send it to the client."""
+    counter = 0
+    while True:
+        if len(player_equipment_map) >= 2:  # Start generating traffic after 2 players register
+            player_ids = list(player_equipment_map.keys())
+            red_player = random.choice(player_ids)
+            green_player = random.choice(player_ids)
 
-                # Look up the equipment IDs for the selected players
-                red_equip_id, _ = player_equipment_map[red_player]
-                green_equip_id, _ = player_equipment_map[green_player]
+            # Get equipment IDs for the selected players
+            red_equip_id, _ = player_equipment_map[red_player]
+            green_equip_id, _ = player_equipment_map[green_player]
 
-                # Simulate interactions between players using their equipment IDs
-                if random.randint(1, 2) == 1:
-                    message = f"{red_equip_id}:{green_equip_id}"
-                else:
-                    message = f"{green_equip_id}:{red_equip_id}"
-                print(f"Generated traffic: {message}")
-                server_socket.sendto(message.encode('utf-8'), ("127.0.0.1", client_port))
+            # Simulate interactions between players using equipment IDs
+            if random.randint(1, 2) == 1:
+                message = f"{red_equip_id}:{green_equip_id}"
+            else:
+                message = f"{green_equip_id}:{red_equip_id}"
+            print(f"Generated traffic: {message}")
+            server_socket.sendto(message.encode('utf-8'), ("127.0.0.1", client_port))
 
-                # Simulate base hits after specific iterations
-                if counter == 10:
-                    base_hit_message = f"{red_player}:43"  # Red team base hit
-                    print(f"Generated base hit: {base_hit_message}")
-                    server_socket.sendto(base_hit_message.encode('utf-8'), ("127.0.0.1", client_port))
-                elif counter == 20:
-                    base_hit_message = f"{green_player}:53"  # Green team base hit
-                    print(f"Generated base hit: {base_hit_message}")
-                    server_socket.sendto(base_hit_message.encode('utf-8'), ("127.0.0.1", client_port))
+            # Simulate base hits after specific iterations using equipment IDs
+            if counter == 10:
+                base_hit_message = f"{red_equip_id}:43"  # Red team base hit
+                print(f"Generated base hit: {base_hit_message}")
+                server_socket.sendto(base_hit_message.encode('utf-8'), ("127.0.0.1", client_port))
+            elif counter == 20:
+                base_hit_message = f"{green_equip_id}:53"  # Green team base hit
+                print(f"Generated base hit: {base_hit_message}")
+                server_socket.sendto(base_hit_message.encode('utf-8'), ("127.0.0.1", client_port))
 
-                counter += 1
-                time.sleep(random.randint(1, 3))  # Wait 1-3 seconds between messages
+            counter += 1
+            time.sleep(random.randint(1, 3))  # Wait 1-3 seconds between messages
 
     # Start the traffic generation thread
     traffic_thread = threading.Thread(target=generate_traffic, daemon=True)
