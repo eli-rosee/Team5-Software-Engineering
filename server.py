@@ -15,7 +15,7 @@ def start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501):
         for idx, ip in enumerate(ips):
             print(f"{idx + 1}: {ip}")
         
-        choice = input("Select network interface (enter number or type ip address(12.7.0.0.1)): ")
+        choice = input("Select network interface (enter number or type ip address(127.0.0.1)): ")
         if choice in ips or choice == "127.0.0.1":
             server_ip = choice
         else:
@@ -43,16 +43,12 @@ def start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501):
                 player_ids = list(player_equipment_map.keys())
                 red_player = random.choice(player_ids)
                 green_player = random.choice(player_ids)
-    
-                # Look up the equipment IDs for the selected players
-                red_equip_id, _ = player_equipment_map[red_player]
-                green_equip_id, _ = player_equipment_map[green_player]
-    
-                # Simulate interactions between players using their equipment IDs
+
+                # Simulate interactions between players
                 if random.randint(1, 2) == 1:
-                    message = f"{red_equip_id}:{green_equip_id}"
+                    message = f"{red_player}:{green_player}"
                 else:
-                    message = f"{green_equip_id}:{red_equip_id}"
+                    message = f"{green_player}:{red_player}"
                 print(f"Generated traffic: {message}")
                 server_socket.sendto(message.encode('utf-8'), ("127.0.0.1", client_port))
 
