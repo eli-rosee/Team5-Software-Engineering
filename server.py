@@ -3,9 +3,28 @@ import threading
 import time
 import random
 
-def start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501):
+def start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501):
     """Start the UDP server."""
     buffer_size = 1024
+
+   #let user specifiy network at runtime.
+    if server_ip == "0.0.0.0":
+        print("Available network interfaces:")
+        hostname = socket.gethostname()
+        ips = socket.gethostbyname_ex(hostname)[2]
+        for idx, ip in enumerate(ips):
+            print(f"{idx + 1}: {ip}")
+        
+        choice = input("Select network interface (enter number or type ip address(12.7.0.0.1)): ")
+        if choice in ips or choice == "127.0.0.1":
+            server_ip = choice
+        else:
+            try:
+                server_ip = ips[int(choice) - 1]
+            except (IndexError, ValueError):
+                print("Invalid selection. Default 127.0.0.1")
+                server_ip = "127.0.0.1"
+
 
     # Create a UDP socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
