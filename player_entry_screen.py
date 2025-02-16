@@ -2,30 +2,30 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLay
 from PyQt6.QtCore import Qt, QTimer,QMetaObject,QEvent
 from functools import partial
 import sys
-import keyboard
+from pynput import keyboard
 
 
 
-def on_key_event(event):
+def on_key_event(key):
     #print(f"Key pressed: {event.name}")
-    if (event.name=="f3"):
-        print("Start game")
-    elif(event.name=="f1"):
-        print("Back to loading screen")
-    elif(event.name=="tab"):
-        #main_window.change_tab_ind()
-        QTimer.singleShot(0, main_window.change_tab_ind)  
-        #print(main_window.tab_ind)
-    elif(event.name=="esc"):
-        QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
-        QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
-    elif(event.name=="enter"):
-        #print("test")
-        if not main_window.popup_active:  
-            QTimer.singleShot(0, main_window.add_player_by_key)
-    else:  
-        if(1==2):
-             print("test")
+    try:
+        if key == keyboard.Key.f3:
+            print("Start game")
+        elif key == keyboard.Key.f1:
+            print("Back to loading screen")
+        elif key == keyboard.Key.tab:
+            #main_window.change_tab_ind()
+            QTimer.singleShot(0, main_window.change_tab_ind)  
+            #print(main_window.tab_ind)
+        elif key == keyboard.Key.esc:
+            QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
+            QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
+        elif key == keyboard.Key.enter:
+            #print("test")
+            if not main_window.popup_active:  
+                QTimer.singleShot(0, main_window.add_player_by_key)
+    except AttributeError:  
+        print("test")
         #name
 
 
@@ -469,9 +469,13 @@ class PlayerEntryScreen(QWidget):
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.MouseButtonPress:
-            if isinstance(obj, QLineEdit):  
+            if isinstance(obj, QLineEdit):
+                for row_index, row in enumerate(self.red_row): 
+                     row[1].setText("  ")
+                for row_index, row in enumerate(self.green_row):  
+                     row[1].setText("  ")
+                     
                 for row_index, row in enumerate(self.red_row):  
-                    row[1].setText("")
                     if obj in (row[3], row[4]):  
                         row[1].setText(">>")
                         self.tab_to_target_red(row_index * 2)
@@ -542,7 +546,8 @@ if __name__ == "__main__":
     main_window = PlayerEntryScreen()
     main_window.show()
     QMetaObject.invokeMethod(main_window.red_row[0][3], "setFocus", Qt.ConnectionType.QueuedConnection)
-    keyboard.on_press(on_key_event)
+    listener = keyboard.Listener(on_press=on_key_event)
+    listener.start()
     timer = QTimer()
     timer.timeout.connect(main_window.toggle_visibility)
     timer.start(100)
