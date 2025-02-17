@@ -476,7 +476,7 @@ class PlayerEntryScreen(QWidget):
             """Check if a player exists in the database by player ID using an existing connection."""
             if conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id,))
+                cursor.execute("SELECT codename FROM players WHERE id = %s;", (int(player_id),))
                 result = cursor.fetchone()
                 cursor.close()
                 return result[0] if result else None  # Return codename if found, otherwise None
