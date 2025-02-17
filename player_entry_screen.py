@@ -473,30 +473,24 @@ class PlayerEntryScreen(QWidget):
                 return None
 
         def get_player_by_id(player_id):
-            """Check if a player exists in the database by player ID."""
-            conn = connect()
+            """Check if a player exists in the database by player ID using an existing connection."""
             if conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id,))
                 result = cursor.fetchone()
                 cursor.close()
-                conn.close()
                 return result[0] if result else None  # Return codename if found, otherwise None
             return None
 
-        def add_new_player(player_id, codename):
-            """Insert a new player into the database."""
-            conn = connect()
+        def add_new_player(conn, player_id, codename):
+            """Insert a new player into the database using an existing connection."""
             if conn:
                 cursor = conn.cursor()
-                cursor.execute(
-                    "INSERT INTO players (id, codename) VALUES (%s, %s);",
-                    (player_id, codename),
-                )
+                cursor.execute("INSERT INTO players (id, codename) VALUES (%s, %s);", (player_id, codename))
                 conn.commit()
                 cursor.close()
-                conn.close()
                 print(f"Player '{codename}' (ID: {player_id}) added successfully!")
+
 
         def get_all_players():
             """Retrieve all players from the database."""
@@ -513,14 +507,14 @@ class PlayerEntryScreen(QWidget):
         # Player Entry via Terminal Input
         conn = connect()
         if conn:
+            player = get_player_by_id(conn, player_id)
             
-            #get_player_by_id(player_id)
-            if (get_player_by_id(player_id)):
-                add_new_player(player_id, code_name)
-                conn.close()
-            else:
-                field2.setText(get_player_by_id(player_id))
-            conn.close()
+            if player:  # If player exists, show codename
+                field2.setText(player)
+            else:  # If player doesn't exist, add them
+                add_new_player(conn, player_id, code_name)
+            
+            conn.close()  # ✅ Close the connection only once
 
 
         text = self.directions.text()
