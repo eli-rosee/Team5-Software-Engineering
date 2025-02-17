@@ -290,7 +290,6 @@ class PlayerEntryScreen(QWidget):
         self.green_row[int((self.tab_ind-1)/2)][1].setStyleSheet("color: black;")
         QApplication.processEvents()
 
-        print(f"Equipment ID Field Value: {equip_id.text()}")  
 
         
 
@@ -520,16 +519,15 @@ class PlayerEntryScreen(QWidget):
 
         elif code_name == "" and player_id!="":
                 if (self.count%3 ==0):
-                    print(player_id)
-                    print(self.count)
                     conn = connect()
                     if conn:
                         player = get_player_by_id(conn, player_id)
-                        print("get player ID")
-                        
+                        print(player)                        
                         if player:  
+                            print("get ID")
                             field2.setText(player)
                         else: 
+                            print("didnt get ID")
                             field2.setText("")
 
                         conn.close()  
@@ -543,8 +541,6 @@ class PlayerEntryScreen(QWidget):
                 return
         elif (equip_id=="" and code_name!="" and player_id!=""):
                 if (self.count%3 ==0):
-                    print(player_id)
-                    print(self.count)
                     if (equip_id=="" and code_name!="" and player_id!=""):
                         conn = connect()
                         if conn:
