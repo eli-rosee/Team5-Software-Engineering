@@ -532,10 +532,8 @@ class PlayerEntryScreen(QWidget):
                         player = get_player_by_id(conn, player_id)
                         print(player)                        
                         if player:  
-                            print("get ID")
                             field2.setText(player)
                         else: 
-                            print("didnt get ID")
                             field2.setText("")
 
                         conn.close()  
