@@ -504,18 +504,6 @@ class PlayerEntryScreen(QWidget):
                 return players  
             return []
 
-        # Player Entry via Terminal Input
-        conn = connect()
-        if conn:
-            player = get_player_by_id(conn, player_id)
-            
-            if player:  # If player exists, show codename
-                field2.setText(player)
-            else:  # If player doesn't exist, add them
-                add_new_player(conn, player_id, code_name)
-            
-            conn.close()  # ✅ Close the connection only once
-
 
         text = self.directions.text()
         number = text.replace("Enter ", "").replace("'s CODE NAME:", "")
@@ -530,6 +518,17 @@ class PlayerEntryScreen(QWidget):
                 return
 
         elif code_name == "":  
+                conn = connect()
+                if conn:
+                    player = get_player_by_id(conn, player_id)
+                    print("get player ID")
+                    
+                    if player:  
+                        field2.setText(player)
+                    else: 
+                        add_new_player(conn, player_id, code_name)
+
+                    conn.close()  
                 field.setReadOnly(True)
                 self.directions.setText(f"Enter {player_id}'s CODE NAME:")
                 QMetaObject.invokeMethod(field2, "setFocus", Qt.ConnectionType.QueuedConnection)
