@@ -6,7 +6,7 @@ import signal
 from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
-#from client import PhotonNetwork  # Import the PhotonNetwork class
+from client import PhotonNetwork  # Import the PhotonNetwork class
 
 
 def on_key_event(key):
@@ -46,7 +46,7 @@ class PlayerEntryScreen(QWidget):
 
         
         # Initialize the PhotonNetwork client
-        #self.photon_network = PhotonNetwork(server_ip="127.0.0.1", server_port=7500, client_port=7501)
+        self.photon_network = PhotonNetwork(server_ip="127.0.0.1", server_port=7500, client_port=7501)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.toggle_visibility)
