@@ -6,7 +6,7 @@ import signal
 from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
-
+from client import PhotonNetwork  # Import the PhotonNetwork class
 
 
 def on_key_event(key):
@@ -43,6 +43,10 @@ class PlayerEntryScreen(QWidget):
         self.popup_active = False 
         self.last_player_id = None
         QApplication.setStyle("windows")  
+
+        
+        # Initialize the PhotonNetwork client
+        self.photon_network = PhotonNetwork(server_ip="127.0.0.1", server_port=7500, client_port=7501)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.toggle_visibility)
@@ -288,6 +292,9 @@ class PlayerEntryScreen(QWidget):
         self.red_row[int((self.tab_ind)/2)][1].setStyleSheet("color: black;")
         self.green_row[int((self.tab_ind-1)/2)][1].setStyleSheet("color: black;")
         QApplication.processEvents()
+
+        # Send player data to the server
+        self.photon_network.equipID(int(player_id_field.text()), equip_id.text(), code_name_field.text())
 
         print(f"Equipment ID Field Value: {equip_id.text()}")  
 
@@ -543,6 +550,9 @@ class PlayerEntryScreen(QWidget):
             field3.setReadOnly(True)
             QTimer.singleShot(0, self.change_tab_ind) 
 
+            # Send player data to the server
+            self.photon_network.equipID(int(player_id), equip_id, code_name)
+            
             self.popup_active = False
 
 
@@ -587,16 +597,18 @@ class PlayerEntryScreen(QWidget):
     def process_equipment_id(self, popup, player_id, code_name, equipment_id):
         if not player_id or not code_name or not equipment_id:
             print("⚠️ All fields must be filled!")
-            return  
+            return
 
         try:
-            player_id = int(player_id)  
+            player_id = int(player_id)
         except ValueError:
             print("⚠️ Player ID must be a number!")
             return
 
-        team = "red" if player_id % 2 == 0 else "green"  
+        team = "red" if player_id % 2 == 0 else "green"
 
+        # Send equipment ID to the server
+        self.photon_network.equipID(player_id, equipment_id, code_name)
 
         popup.accept()
   
