@@ -256,7 +256,7 @@ class PlayerEntryScreen(QWidget):
         self.setLayout(main_layout)
         self.install_input_event_listeners() 
         self.install_button_event_listeners()
-
+        self.count = 0
         
     def add_player_by_key(self):
         for row_index, row in enumerate(self.red_row): 
@@ -454,63 +454,64 @@ class PlayerEntryScreen(QWidget):
 
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
         #database check here
-
-        # ✅ Define correct connection parameters
-        """
-        connection_params = {
-            'dbname': 'photon',  # Ensure this database exists  # Uncomment and add password if required
-            'host': 'localhost',   # Change if connecting to a remote DB
-            'port': '5432'         # Default PostgreSQL port
-        }
-
-        try:
-            conn = psycopg2.connect(**connection_params)
-            cursor = conn.cursor()
-
-            cursor.execute("SELECT version();")
-            version = cursor.fetchone()
-            print(f"Connected to - {version[0]}")
-
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS players (
-                    id SERIAL PRIMARY KEY,
-                    codename VARCHAR(100) UNIQUE NOT NULL
-                );
-            ''')
-            conn.commit()
-
-            try:
-                cursor.execute('''
-                    INSERT INTO players (id, codename)
-                    VALUES (%s, %s)
-                    ON CONFLICT (codename) DO NOTHING;  -- Prevent duplicate insert
-                ''', (500, 'BhodiLi'))
-                conn.commit()
-            except psycopg2.IntegrityError:
-                print("Duplicate entry, skipping insert.")
-
-            cursor.execute("SELECT * FROM players;")
-            rows = cursor.fetchall()
-            print("\nPlayers List:")
-            for row in rows:
-                print(row)
-
-        except Exception as error:
-            print(f"Error connecting to PostgreSQL: {error}")
-
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
-            print("🔌 PostgreSQL connection closed.")
-"""
-        if (1==2):
-             field2.setText("")
-
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
+        
+        DB_NAME = "photon"
+        DB_HOST = "127.0.0.1"
+        DB_PORT = "5432"  # PostgreSQL default port
+
+        def connect():
+            """Establish a connection to the PostgreSQL database."""
+            print("Attempting to connect to PostgreSQL...")
+            try:
+                conn = psycopg2.connect(
+                    dbname=DB_NAME,
+                    host=DB_HOST,
+                    user="student",
+                    password="student",
+                    port=DB_PORT
+                )
+                print("Connected to PostgreSQL successfully!")
+                return conn
+            except psycopg2.Error as e:
+                print("Database connection failed:", e)
+                return None
+
+        def get_player_by_id(conn, player_id):
+            """Check if a player exists in the database by player ID using an existing connection."""
+            if conn:
+                cursor = conn.cursor()
+                player_id = int(player_id)
+                cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id,))
+                result = cursor.fetchone()
+                cursor.close()
+                return result[0] if result else None  # Return codename if found, otherwise None
+            return None
+
+        def add_new_player(conn, player_id, codename):
+            """Insert a new player into the database using an existing connection."""
+            if conn:
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO players (id, codename) VALUES (%s, %s);", (player_id, codename))
+                conn.commit()
+                cursor.close()
+                print(f"Player '{codename}' (ID: {player_id}) added successfully!")
+
+
+        def get_all_players():
+            """Retrieve all players from the database."""
+            conn = connect()
+            if conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM players;")
+                players = cursor.fetchall()
+                cursor.close()
+                conn.close()
+                return players  
+            return []
+
 
         text = self.directions.text()
         number = text.replace("Enter ", "").replace("'s CODE NAME:", "")
@@ -524,19 +525,50 @@ class PlayerEntryScreen(QWidget):
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
                 return
 
-        elif code_name == "":  
+        elif code_name == "" and player_id!="":
+                if (self.count%3 ==0):
+                    conn = connect()
+                    if conn:
+                        player = get_player_by_id(conn, player_id)
+                        print(player)                        
+                        if player:  
+                            print("get ID")
+                            field2.setText(player)
+                        else: 
+                            print("didnt get ID")
+                            field2.setText("")
+
+                        conn.close()  
+
                 field.setReadOnly(True)
                 self.directions.setText(f"Enter {player_id}'s CODE NAME:")
                 QMetaObject.invokeMethod(field2, "setFocus", Qt.ConnectionType.QueuedConnection)
                 field2.setReadOnly(False)
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
+                self.count +=1
                 return
-        elif equip_id == "":
+        elif (equip_id=="" and code_name!="" and player_id!=""):
+                if (self.count%3 ==0):
+                    if (equip_id=="" and code_name!="" and player_id!=""):
+                        conn = connect()
+                        if conn:
+                            player = get_player_by_id(conn, player_id)
+                            print("get player ID")
+                            
+                            if player:  
+                                field2.setText(player)
+                            else: 
+                                add_new_player(conn, player_id, code_name)
+
+                            conn.close()  
+                    
+
                 field2.setReadOnly(True)
                 self.directions.setText(f"Enter {player_id} equipment ID") 
                 QMetaObject.invokeMethod(field3, "setFocus", Qt.ConnectionType.QueuedConnection)
                 field3.setReadOnly(False)
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
+                self.count +=1
                 return
         else:
             checkbox.setEnabled(False)
@@ -548,11 +580,8 @@ class PlayerEntryScreen(QWidget):
                 
                 #self.show_popup_input(player_id, code_name)
             field3.setReadOnly(True)
-            QTimer.singleShot(0, self.change_tab_ind) 
+            QTimer.singleShot(50, self.change_tab_ind) 
 
-            # Send player data to the server
-            self.photon_network.equipID(int(player_id), equip_id, code_name)
-            
             self.popup_active = False
 
 
@@ -593,24 +622,6 @@ class PlayerEntryScreen(QWidget):
 
             popup.exec()  
             self.popup_active = False 
-
-    def process_equipment_id(self, popup, player_id, code_name, equipment_id):
-        if not player_id or not code_name or not equipment_id:
-            print("⚠️ All fields must be filled!")
-            return
-
-        try:
-            player_id = int(player_id)
-        except ValueError:
-            print("⚠️ Player ID must be a number!")
-            return
-
-        team = "red" if player_id % 2 == 0 else "green"
-
-        # Send equipment ID to the server
-        self.photon_network.equipID(player_id, equipment_id, code_name)
-
-        popup.accept()
   
 
     def install_input_event_listeners(self):
