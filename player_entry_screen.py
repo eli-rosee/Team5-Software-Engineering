@@ -6,7 +6,7 @@ import signal
 from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
-
+#from client import PhotonNetwork  # Import the PhotonNetwork class
 
 
 def on_key_event(key):
@@ -19,14 +19,14 @@ def on_key_event(key):
             print("Back to loading screen")
         elif key == keyboard.Key.tab:
             #main_window.change_tab_ind()
-            QTimer.singleShot(50, self.change_tab_ind)  
+            QTimer.singleShot(0, self.change_tab_ind)  
             #print(main_window.tab_ind)
         elif key == keyboard.Key.esc:
             QMetaObject.invokeMethod(self.timer, "stop", Qt.ConnectionType.QueuedConnection)
             QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
         elif key == keyboard.Key.enter:
             #print("test")
-                QTimer.singleShot(50, self.add_player_by_key)
+                QTimer.singleShot(0, self.add_player_by_key)
     except AttributeError:  
         print("test")
         #name
@@ -43,6 +43,10 @@ class PlayerEntryScreen(QWidget):
         self.popup_active = False 
         self.last_player_id = None
         QApplication.setStyle("windows")  
+
+        
+        # Initialize the PhotonNetwork client
+        #self.photon_network = PhotonNetwork(server_ip="127.0.0.1", server_port=7500, client_port=7501)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.toggle_visibility)
@@ -253,7 +257,6 @@ class PlayerEntryScreen(QWidget):
         self.install_input_event_listeners() 
         self.install_button_event_listeners()
         self.count = 0
-
         
     def add_player_by_key(self):
         for row_index, row in enumerate(self.red_row): 
@@ -290,6 +293,10 @@ class PlayerEntryScreen(QWidget):
         self.green_row[int((self.tab_ind-1)/2)][1].setStyleSheet("color: black;")
         QApplication.processEvents()
 
+        # Send player data to the server
+        self.photon_network.equipID(int(player_id_field.text()), equip_id.text(), code_name_field.text())
+
+        print(f"Equipment ID Field Value: {equip_id.text()}")  
 
         
 
@@ -422,7 +429,7 @@ class PlayerEntryScreen(QWidget):
                         next_checkbox, next_arrow, next_num, next_player_id, next_code_name, next_eqip_id = self.green_row[j]
 
                         if next_player_id.text().strip() != "" or next_code_name.text().strip() != "" or next_eqip_id.text().strip() != "":
-                            QTimer.singleShot(50, self.change_tab_ind) 
+                            QTimer.singleShot(0, self.change_tab_ind) 
                             player_id_field.setText(next_player_id.text())
                             player_id_field.setReadOnly(True)
                             code_name_field.setText(next_code_name.text())
@@ -615,7 +622,6 @@ class PlayerEntryScreen(QWidget):
 
             popup.exec()  
             self.popup_active = False 
-
   
 
     def install_input_event_listeners(self):
@@ -661,7 +667,7 @@ class PlayerEntryScreen(QWidget):
             if extra_steps > 0:
                 extra_steps -= 1  
             
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(target_index, extra_steps))  
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(target_index, extra_steps))  
 
 
     def tab_to_target_green(self, target_index, extra_steps=0):
@@ -671,7 +677,7 @@ class PlayerEntryScreen(QWidget):
             if extra_steps > 0:
                 extra_steps -= 1  
             
-            QTimer.singleShot(50, lambda: self.tab_to_target_green(target_index, extra_steps)) 
+            QTimer.singleShot(0, lambda: self.tab_to_target_green(target_index, extra_steps)) 
 
     def install_button_event_listeners(self):
         for index, button in self.buttons.items():
@@ -689,7 +695,7 @@ class PlayerEntryScreen(QWidget):
 
             QApplication.processEvents()
             self.tab_ind = 30 
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(30, 0))  
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(30, 0))  
 
 
             
@@ -701,7 +707,7 @@ class PlayerEntryScreen(QWidget):
                     row[1].setStyleSheet("color: black;")
             self.tab_ind = 31
             QApplication.processEvents()
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(31, 0)) 
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(31, 0)) 
         elif index == 32:  # F3 Start Game
             print("Starting Game...")
             for row_index, row in enumerate(self.red_row): 
@@ -710,7 +716,7 @@ class PlayerEntryScreen(QWidget):
                     row[1].setStyleSheet("color: black;")
             self.tab_ind = 32
             QApplication.processEvents()
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(32, 0)) 
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
         elif index == 33:  # F5 PreEntered Games
             print("Viewing PreEntered Games...")
             for row_index, row in enumerate(self.red_row): 
@@ -719,7 +725,7 @@ class PlayerEntryScreen(QWidget):
                     row[1].setStyleSheet("color: black;")
             self.tab_ind = 33
             QApplication.processEvents()
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(33, 0)) 
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
         elif index == 34:  # F7
             print("F7 Action Triggered")
             for row_index, row in enumerate(self.red_row): 
@@ -728,7 +734,7 @@ class PlayerEntryScreen(QWidget):
                     row[1].setStyleSheet("color: black;")
             self.tab_ind = 34
             QApplication.processEvents()
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(34, 0))            
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(34, 0))            
         elif index == 35:  # F8 View Game
             print("Viewing Game...")
             for row_index, row in enumerate(self.red_row): 
@@ -737,14 +743,14 @@ class PlayerEntryScreen(QWidget):
                     row[1].setStyleSheet("color: black;")
             self.tab_ind = 35
             QApplication.processEvents()
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(35, 0))           
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(35, 0))           
         elif index == 36:  # F10 Flick Sync
             print("Performing Flick Sync...")
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
                     row[1].setStyleSheet("color: black;")
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(36, 0))
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(36, 0))
             self.tab_ind = 36   
             QApplication.processEvents()           
         elif index == 37:  # F12 Clear Game
@@ -755,7 +761,7 @@ class PlayerEntryScreen(QWidget):
                     row[1].setStyleSheet("color: black;")
             self.tab_ind = 37   
             QApplication.processEvents() 
-            QTimer.singleShot(50, lambda: self.tab_to_target_red(37, 0))         
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(37, 0))         
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -766,6 +772,6 @@ if __name__ == "__main__":
     listener.start()
     timer = QTimer()
     timer.timeout.connect(self.toggle_visibility)
-    timer.start(500)
+    timer.start(100)
 
     sys.exit(app.exec())
