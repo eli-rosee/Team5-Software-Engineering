@@ -477,7 +477,7 @@ class PlayerEntryScreen(QWidget):
             conn = connect()
             if conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT codename FROM players WHERE player_id = %s;", (player_id,))
+                cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id))
                 result = cursor.fetchone()
                 cursor.close()
                 conn.close()
