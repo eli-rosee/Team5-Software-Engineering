@@ -472,7 +472,7 @@ class PlayerEntryScreen(QWidget):
                 print("Database connection failed:", e)
                 return None
 
-        def get_player_by_id(player_id):
+        def get_player_by_id(conn, player_id):
             """Check if a player exists in the database by player ID using an existing connection."""
             if conn:
                 cursor = conn.cursor()
