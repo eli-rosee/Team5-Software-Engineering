@@ -65,7 +65,7 @@ if __name__ == "__main__":
         listener.start()
 
     transition_timer.timeout.connect(transition_to_player_entry)
-    transition_timer.start(3000)  
+    transition_timer.start(15000)  
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
