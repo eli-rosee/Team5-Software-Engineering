@@ -477,7 +477,7 @@ class PlayerEntryScreen(QWidget):
             conn = connect()
             if conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id))
+                cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id,))
                 result = cursor.fetchone()
                 cursor.close()
                 conn.close()
@@ -517,6 +517,7 @@ class PlayerEntryScreen(QWidget):
             #get_player_by_id(player_id)
             if (get_player_by_id(player_id)):
                 add_new_player(player_id, code_name)
+                conn.close()
             else:
                 field2.setText(get_player_by_id(player_id))
             conn.close()
