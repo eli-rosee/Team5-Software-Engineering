@@ -526,7 +526,7 @@ class PlayerEntryScreen(QWidget):
                     if player:  
                         field2.setText(player)
                     else: 
-                        add_new_player(conn, player_id, code_name)
+                        field2.setText("")
 
                     conn.close()  
                 field.setReadOnly(True)
@@ -536,6 +536,17 @@ class PlayerEntryScreen(QWidget):
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
                 return
         elif equip_id == "":
+                conn = connect()
+                if conn:
+                    player = get_player_by_id(conn, player_id)
+                    print("get player ID")
+                    
+                    if player:  
+                        field2.setText(player)
+                    else: 
+                        add_new_player(conn, player_id, code_name)
+
+                    conn.close()  
                 field2.setReadOnly(True)
                 self.directions.setText(f"Enter {player_id} equipment ID") 
                 QMetaObject.invokeMethod(field3, "setFocus", Qt.ConnectionType.QueuedConnection)
