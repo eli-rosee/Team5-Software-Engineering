@@ -296,7 +296,7 @@ class PlayerEntryScreen(QWidget):
         # Send player data to the server
         self.photon_network.equipID(int(player_id_field.text()), equip_id.text(), code_name_field.text())
 
-        print(f"Equipment ID Field Value: {equip_id.text()}")  
+        #print(f"Equipment ID Field Value: {equip_id.text()}")  
 
         
 
