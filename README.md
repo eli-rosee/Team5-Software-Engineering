@@ -22,7 +22,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - move all dowloaded files to project (mv /home/student/Downloads/filename project/)
      - cd project
   
-  4. Create a foler called graphics and move logo into it - Step only required if unable to download graphics folder
+  4. Create a folder called graphics and move logo into it - Step only required if unable to download graphics folder
      - mkdir graphics
      - mv /home/student/Downloads/logo.jpg graphics/ 
     
