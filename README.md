@@ -64,8 +64,11 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
     
   9. What happens in server.py?
      - The first thing you enter is the ip address you want
-     - Then server listens for data sent by client
-     - After server recieves 2 players from client, it starts generating traffic
+     - Then server listens for data sent by client or application
+     - After server recieves 2 players from application, it starts generating traffic
+
+  10. What happens in client.py?
+     - Client talks server and server talks back to client
      
   
 
