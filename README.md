@@ -30,7 +30,6 @@
      - python3 main.py (open another terminal instance)
     
   5. Testing client-server interaction (must be inside project folder)
-     - python3 server.py (must run server file first)
      - python3 client.py (open another terminal instance)
     
 
