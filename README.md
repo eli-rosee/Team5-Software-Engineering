@@ -35,9 +35,13 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - sudo apt install libxcb-cursor0
     
   6. Running the application
-     - python3 main.py
+     - python3 server.py
+     - python3 main.py (open another terminal instance)
+    
+  7. What happens in server.py?
+     - 
 
-  7. What happens while running the program?
+  9. What happens in main.py?
      - First 15 seconds is the loading screen
      - In those 15 seconds that the game is loading, you can choose what ip address you want in the terminal
      - After that, the player entry screen loads
