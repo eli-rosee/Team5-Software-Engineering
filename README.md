@@ -27,7 +27,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - mv /home/student/Downloads/logo.jpg graphics/ (move the logo into a folder called graphics
     
   5. Install required libraries
-     - sudo apt update
+     - sudo apt update (password: student)
      - sudo apt install python3-pip
      - pip install PyQt6
      - sudo pip3 install pynput
