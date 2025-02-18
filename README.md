@@ -36,8 +36,8 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
     
   6. Running the application
      - python3 main.py
-    
-  What happens while running the program?
+
+  7. What happens while running the program?
      - First 15 seconds is the loading screen
      - In those 15 seconds that the game is loading, you can choose what ip address you want in the terminal
      - After that, the player entry screen loads
