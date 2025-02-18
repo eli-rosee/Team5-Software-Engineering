@@ -41,7 +41,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
 
   7. What happens in main.py?
      - First 15 seconds is the loading screen
-     - In those 15 seconds that the game is loading, you can choose what ip address you want
+     - In those 15 seconds that the game is loading, you can choose what ip address you want (in the terminal)
      - After that, the player entry screen loads
      - In the player entry screen, you can insert the player_id into a player id textbox
      - To confirm the player id, press enter or click the add checkbox
