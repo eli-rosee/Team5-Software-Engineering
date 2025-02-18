@@ -38,8 +38,12 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - python3 server.py (must run server file first)
      - python3 main.py (open another terminal instance)
     
+  7. Testing client-server interaction (must be inside project folder)
+     - python3 server.py (must run server file first)
+     - python3 client.py (open another terminal instance)
+    
 
-  7. What happens in main.py?
+  8. What happens in main.py?
      - First 15 seconds is the loading screen
      - In those 15 seconds that the game is loading, you can choose what ip address you want (in the terminal)
      - After that, the player entry screen loads
@@ -53,7 +57,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - If you want to to move sides or to a specific textbox, you can either press tab or click the text box with your cursor
      - After the second player is entered, it automatically starts the game and receives data from server.py
     
-  7. What happens in server.py?
+  9. What happens in server.py?
      - The first thing you enter is the ip address you want
      - Then server listens for data sent by client
      - After server recieves 2 players from client, it starts generating traffic
