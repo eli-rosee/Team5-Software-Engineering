@@ -29,7 +29,8 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
   project directory should look like this: ![image](https://github.com/user-attachments/assets/59fbe672-e726-4402-a866-fc87c456699c)
   
   
-  graphics directory should look like this: ![image](https://github.com/user-attachments/assets/a1b09c8e-ce23-4807-93cc-081b7acebe5f)
+  graphics directory should look like this: 
+  ![image](https://github.com/user-attachments/assets/a1b09c8e-ce23-4807-93cc-081b7acebe5f)
     
   5. Install required libraries
      - sudo apt update (password: student)
