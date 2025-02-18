@@ -24,7 +24,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
   
   4. Step only required if unable to download graphics folder
      - mkdir graphics
-     - mv /home/student/Downloads/logo.jpg graphics/ (move the logo into a folder called graphics
+     - mv /home/student/Downloads/logo.jpg graphics/ (move the logo into a folder called graphics)
     
   5. Install required libraries
      - sudo apt update (password: student)
