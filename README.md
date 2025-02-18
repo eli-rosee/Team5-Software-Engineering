@@ -1,7 +1,5 @@
 # Team5-Software-Engineering Setup Instructions
 
-To run this program, you need to install a Debian Virtual Machine. The .iso download can be found on the Debian website. We used virtual box for VM capabilities
-
   1. Install the Debian virtual machine provided by Instructor Jim Strother
      - All instructions in read me assume access to this specific VM
     
