@@ -20,7 +20,7 @@ def on_key_event(key):
         elif key == keyboard.Key.f1:
             print("Back to loading screen")
         elif key == keyboard.Key.tab:
-            print("Tab pressed")
+            #print("Tab pressed")
             QTimer.singleShot(0, main_window.change_tab_ind)  
         elif key == keyboard.Key.esc:
             QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
