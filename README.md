@@ -38,12 +38,10 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - python3 server.py
      - python3 main.py (open another terminal instance)
     
-  7. What happens in server.py?
-     - 
 
-  9. What happens in main.py?
+  7. What happens in main.py?
      - First 15 seconds is the loading screen
-     - In those 15 seconds that the game is loading, you can choose what ip address you want in the terminal
+     - In those 15 seconds that the game is loading, you can choose what ip address you want in the terminal for the client
      - After that, the player entry screen loads
      - In the player entry screen, you can insert the player_id into a player id textbox
      - To confirm the player id, press enter or click the add checkbox
@@ -51,8 +49,14 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - If the player id is not in the database, you must enter it yourself
      - Again, you can press enter or click the add checkbox to confirm the codename
      - Lastly, you must insert and confirm the equipment id 
-     - Pressing enter or the add checkbox, will then add the player completely
+     - Pressing enter or the add checkbox, will then add the player completely (client sends information to the server)
      - If you want to to move sides or to a specific textbox, you can either press tab or click the text box with your cursor
+     - After the second player is entered, it automatically starts the game and receives data from server.py
+    
+  7. What happens in server.py?
+     - The first thing you enter is the ip address you want for the server
+     - Then server listens for data sent by client
+     - After server recieves 2 players from client, it starts genating the generating traffic
      
   
 
