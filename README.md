@@ -34,7 +34,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - pip install psycopg2-binary
      - sudo apt install libxcb-cursor0
     
-  6. Running the application
+  6. Running the application (must be inside project folder)
      - python3 server.py (must run server file first)
      - python3 main.py (open another terminal instance)
     
