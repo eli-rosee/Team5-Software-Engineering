@@ -31,9 +31,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - sudo apt install python3-pip (Y to continue)
      - pip install PyQt6
      - sudo pip3 install pynput
-     - pip install psycopg2
      - pip install psycopg2-binary
-     - sudo pip3 install keyboard
      - sudo apt install libxcb-cursor0
     
   6. Running the application
