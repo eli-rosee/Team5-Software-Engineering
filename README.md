@@ -13,7 +13,6 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - player_entry_screen.py
      - server.py
      - splash.py
-     - database.py
      - graphics (folder) - if unable to download graphics folder, download logo.jpg located inside the graphics folder
     
   3. Create a directory named project and move all python files and folders into it
