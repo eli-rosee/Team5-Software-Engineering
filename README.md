@@ -23,7 +23,8 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - player_entry_screen.py
      - server.py
      - splash.py
-     - graphics (folder)
+     - graphics (folder) - if unable to download grpahics folder, download logo.jpg loacted inside the graphics folder
+          
     
   5. Running the application
      - python3 main.py
