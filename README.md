@@ -8,9 +8,21 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - Create a new virtual machine in Virtual Box and install Debian
 
   2. Install required libraries
-     - sudo apt install python3-pyqt6
-     - sudo apt install python3-pynput
-     - sudo apt install python3-psycopg2 -y
+     - sudo apt update
+     - sudo apt install python3-pip
+     - pip install PyQt6
+     - sudo pip3 install pynput
+     - pip install psycopg2
+     - pip install psycopg2-binary
+     - sudo pip3 install keyboard
+     - sudo apt install libxcb-cursor0
     
-  4. Running the application
+  3. Dowload all files
+     - client.py
+     - main.py
+     - player_entry_screen.py
+     - server.py
+     - splash.py
+    
+  5. Running the application
      - python3 main.py
