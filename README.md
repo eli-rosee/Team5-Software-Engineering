@@ -22,9 +22,9 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - move all dowloaded files to project (mv /home/student/Downloads/filename project/)
      - cd project
   
-  4. Step only required if unable to download graphics folder
+  4. Create a foler called graphics and move logo into it - Step only required if unable to download graphics folder
      - mkdir graphics
-     - mv /home/student/Downloads/logo.jpg graphics/ (move the logo into a folder called graphics)
+     - mv /home/student/Downloads/logo.jpg graphics/ 
     
   5. Install required libraries
      - sudo apt update (password: student)
