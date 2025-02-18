@@ -68,8 +68,4 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - After server recieves 2 players from application, it starts generating traffic
 
   10. What happens in client.py?
-     - Client talks to server and server talks back to client
-     
-  
-
-     
+     - Client talks to the server and the server talks back to client
