@@ -16,7 +16,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - database.py
      - graphics (folder) - if unable to download graphics folder, download logo.jpg located inside the graphics folder
     
-  3. Create a directory
+  3. Create a directory and move all python files into it
      - Open the terminal
      - mkdir project
      - move all dowloaded files to project (mv /home/student/Downloads/filename project/)
