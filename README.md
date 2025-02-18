@@ -6,8 +6,27 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - Install Virtual Box if you haven't already
      - Download a Debian amd64 .iso from the Debian webiste
      - Create a new virtual machine in Virtual Box and install Debian
-
-  2. Install required libraries
+    
+  2. Dowload all files from git
+     - client.py
+     - main.py
+     - player_entry_screen.py
+     - server.py
+     - splash.py
+     - database.py
+     - graphics (folder) - if unable to download graphics folder, download logo.jpg located inside the graphics folder
+    
+  3. Create a directory
+     - Open the terminal
+     - mkdir project
+     - move all dowloaded files to project (mv /home/student/Downloads/filename project/)
+     - cd project
+  
+  4. Step only required if unable to download graphics folder
+     - mkdir graphics
+     - mv /home/student/Downloads/logo.jpg graphics/ (move the logo into a folder called graphics
+    
+  5. Install required libraries
      - sudo apt update
      - sudo apt install python3-pip
      - pip install PyQt6
@@ -17,14 +36,5 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - sudo pip3 install keyboard
      - sudo apt install libxcb-cursor0
     
-  3. Dowload all files
-     - client.py
-     - main.py
-     - player_entry_screen.py
-     - server.py
-     - splash.py
-     - graphics (folder) - if unable to download graphics folder, download logo.jpg located inside the graphics folder
-          
-    
-  5. Running the application
+  6. Running the application
      - python3 main.py
