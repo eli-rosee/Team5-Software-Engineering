@@ -35,13 +35,13 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - sudo apt install libxcb-cursor0
     
   6. Running the application
-     - python3 server.py
+     - python3 server.py (must run server file first)
      - python3 main.py (open another terminal instance)
     
 
   7. What happens in main.py?
      - First 15 seconds is the loading screen
-     - In those 15 seconds that the game is loading, you can choose what ip address you want in the terminal for the client
+     - In those 15 seconds that the game is loading, you can choose what ip address you want
      - After that, the player entry screen loads
      - In the player entry screen, you can insert the player_id into a player id textbox
      - To confirm the player id, press enter or click the add checkbox
@@ -54,7 +54,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - After the second player is entered, it automatically starts the game and receives data from server.py
     
   7. What happens in server.py?
-     - The first thing you enter is the ip address you want for the server
+     - The first thing you enter is the ip address you want
      - Then server listens for data sent by client
      - After server recieves 2 players from client, it starts genating the generating traffic
      
