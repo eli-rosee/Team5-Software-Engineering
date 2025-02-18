@@ -530,7 +530,7 @@ class PlayerEntryScreen(QWidget):
                     conn = connect()
                     if conn:
                         player = get_player_by_id(conn, player_id)
-                        print(player)                        
+                        #print(player)                        
                         if player:  
                             field2.setText(player)
                         else: 
