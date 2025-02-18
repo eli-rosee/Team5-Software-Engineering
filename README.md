@@ -28,7 +28,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
     
   5. Install required libraries
      - sudo apt update (password: student)
-     - sudo apt install python3-pip
+     - sudo apt install python3-pip (Y to continue)
      - pip install PyQt6
      - sudo pip3 install pynput
      - pip install psycopg2
