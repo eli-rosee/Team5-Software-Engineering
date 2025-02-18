@@ -58,7 +58,7 @@ To run this program, you need to install a Debian Virtual Machine. The .iso down
      - If the player id is not in the database, you must enter it yourself
      - Again, you can press enter or click the add checkbox to confirm the codename
      - Lastly, you must insert and confirm the equipment id 
-     - Pressing enter or the add checkbox, will then add the player completely (client sends information to the server)
+     - Pressing enter or the add checkbox, will then add the player completely (sends information to the server)
      - If you want to to move sides or to a specific textbox, you can either press tab or click the text box with your cursor
      - After the second player is entered, it automatically starts the game and receives data from server.py
     
