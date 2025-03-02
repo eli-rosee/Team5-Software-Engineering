@@ -681,6 +681,16 @@ class PlayerEntryScreen(QWidget):
         for index, button in self.buttons.items():
             button.clicked.connect(partial(self.on_button_clicked, index, button))
 
+    def clear_all_players(self):
+        for checkbox, arrow_label, num_label, player_id_field, code_name_field, equip_id in self.red_row + self.green_row:
+            checkbox.setChecked(False)
+            player_id_field.clear()
+            code_name_field.clear()
+            equip_id.clear()
+
+        QApplication.processEvents()
+        print("All player entries cleared.")
+
     def on_button_clicked(self, index, button):
         self.directions.setText(f"Button {index} clicked: {button.text()}")
 
@@ -693,10 +703,7 @@ class PlayerEntryScreen(QWidget):
 
             QApplication.processEvents()
             self.tab_ind = 30 
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(30, 0))  
-
-
-            
+            QTimer.singleShot(0, lambda: self.tab_to_target_red(30, 0))    
         elif index == 31:  # F2 Game Parameters
             print("Adjusting Game Parameters...")
             for row_index, row in enumerate(self.red_row): 
@@ -753,13 +760,7 @@ class PlayerEntryScreen(QWidget):
             QApplication.processEvents()           
         elif index == 37:  # F12 Clear Game
             print("Clearing Game...")
-            for row_index, row in enumerate(self.red_row): 
-                    row[1].setStyleSheet("color: black;")
-            for row_index, row in enumerate(self.green_row):  
-                    row[1].setStyleSheet("color: black;")
-            self.tab_ind = 37   
-            QApplication.processEvents() 
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(37, 0))         
+            self.clear_all_players()   
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
