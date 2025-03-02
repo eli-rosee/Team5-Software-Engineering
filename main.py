@@ -23,6 +23,8 @@ def on_key_event(key):
             print("Start game")
         elif key == keyboard.Key.f1:
             print("Back to loading screen")
+        elif key == keyboard.Key.f12:
+                QTimer.singleShot(0, main_window.clear_all_players)
         elif key == keyboard.Key.tab:
             if main_window is not None:
                 QTimer.singleShot(0, main_window.change_tab_ind)
