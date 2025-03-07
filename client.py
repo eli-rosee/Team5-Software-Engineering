@@ -27,12 +27,6 @@ class PhotonNetwork:
         # Track added players and their equipment IDs
         self.player_equipment_map = {}  # {player_id: equipment_id}
 
-        # Initialize player equipment IDs
-        self.red1 = None
-        self.red2 = None
-        self.green1 = None
-        self.green2 = None
-
     def send_start_signal(self):
         """Send the start signal ("202") to the game software."""
         message = "202".encode()
