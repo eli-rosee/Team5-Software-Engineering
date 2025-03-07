@@ -24,37 +24,23 @@ class PhotonNetwork:
         self.receive_thread = threading.Thread(target=self.listen_for_responses, daemon=True)
         self.receive_thread.start()
 
-        # Track added players and their equipment IDs
-        self.player_equipment_map = {}  # {player_id: equipment_id}
-
-        # Initialize player equipment IDs
-        self.red1 = None
-        self.red2 = None
-        self.green1 = None
-        self.green2 = None
-
     def send_start_signal(self):
         """Send the start signal ("202") to the game software."""
         message = "202".encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
         print("Sent start signal: 202")
 
-    def equipID(self, player_id, equip_id=None, player_name=None):
+    def equipID(self, equip_id):
         """
-        Send the player ID, equipment ID, and player name to the server.
-        If equip_id and player_name are provided, send them along with the player ID.
+        Send the equipment ID to the server.
         """
-        if not isinstance(player_id, int):
-            raise ValueError("player_id must be an integer")
+        if not isinstance(equip_id, str):
+            raise ValueError("equip_id must be a string")
 
-        # Send the player ID, equipment ID, and player name to the server
-        if equip_id is not None and player_name is not None:
-            message = f"{player_id}:{equip_id}:{player_name}".encode()
-        else:
-            message = str(player_id).encode()
-
+        # Send the equipment ID to the server
+        message = equip_id.encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print(f"Sent player ID, equipment ID, and name to server: {player_id}:{equip_id}:{player_name}")
+        print(f"Sent equipment ID to server: {equip_id}")
 
         # Wait for the server to respond
         try:
@@ -62,15 +48,7 @@ class PhotonNetwork:
             response = data.decode('utf-8')
             print(f"Received response from server: {response}")
         except socket.timeout:
-            print(f"Timeout waiting for response from server for player {player_id}")
-
-    def sendPlayerID(self, player_id):
-        """Send a photon event with the player ID."""
-        if not isinstance(player_id, int):
-            raise ValueError("player_id must be an integer")
-        message = str(player_id).encode()
-        self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print(f"Sent photon event: {player_id}")
+            print(f"Timeout waiting for response from server for equipment ID {equip_id}")
 
     def listen_for_responses(self):
         """Continuously listen for incoming data on the receive socket."""
@@ -99,18 +77,13 @@ if __name__ == "__main__":
     photon_network = PhotonNetwork(server_ip=server_ip)
 
     try:
-        # Initialize player equipment IDs
-        print('this program will generate some test traffic for 2 players on the red ')
-        print('team as well as 2 players on the green team')
-        print('')
-        photon_network.red1 = input('Enter equipment id of red player 1 ==> ')
-        photon_network.red2 = input('Enter equipment id of red player 2 ==> ')
-        photon_network.green1 = input('Enter equipment id of green player 1 ==> ')
-        photon_network.green2 = input('Enter equipment id of green player 2 ==> ')
-
         # Send the start signal to the game software
         photon_network.send_start_signal()
         time.sleep(1)  # Wait for the game software to be ready
+
+        # Example: Send equipment ID
+        equip_id = input("Enter equipment ID: ")
+        photon_network.equipID(equip_id)
 
     except KeyboardInterrupt:
         photon_network.close()
