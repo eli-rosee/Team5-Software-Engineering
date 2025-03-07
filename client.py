@@ -99,15 +99,6 @@ if __name__ == "__main__":
     photon_network = PhotonNetwork(server_ip=server_ip)
 
     try:
-        # Initialize player equipment IDs
-        print('this program will generate some test traffic for 2 players on the red ')
-        print('team as well as 2 players on the green team')
-        print('')
-        photon_network.red1 = input('Enter equipment id of red player 1 ==> ')
-        photon_network.red2 = input('Enter equipment id of red player 2 ==> ')
-        photon_network.green1 = input('Enter equipment id of green player 1 ==> ')
-        photon_network.green2 = input('Enter equipment id of green player 2 ==> ')
-
         # Send the start signal to the game software
         photon_network.send_start_signal()
         time.sleep(1)  # Wait for the game software to be ready
