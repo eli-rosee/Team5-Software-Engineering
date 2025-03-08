@@ -33,22 +33,11 @@ class PhotonNetwork:
         self.broadcast_socket.sendto(message, self.serverAddressPort)
         print("Sent start signal: 202")
 
-    def equipID(self, player_id, equip_id=None, player_name=None):
-        """
-        Send the player ID, equipment ID, and player name to the server.
-        If equip_id and player_name are provided, send them along with the player ID.
-        """
-        if not isinstance(player_id, int):
-            raise ValueError("player_id must be an integer")
-
-        # Send the player ID, equipment ID, and player name to the server
-        if equip_id is not None and player_name is not None:
-            message = f"{player_id}:{equip_id}:{player_name}".encode()
-        else:
-            message = str(player_id).encode()
-
+    def equipID(self, equip_id):
+        """Send the equipment ID to the server."""
+        message = equip_id.encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print(f"Sent player ID, equipment ID, and name to server: {player_id}:{equip_id}:{player_name}")
+        print(f"Sent equipment ID to server: {equip_id}")
 
         # Wait for the server to respond
         try:
@@ -56,15 +45,7 @@ class PhotonNetwork:
             response = data.decode('utf-8')
             print(f"Received response from server: {response}")
         except socket.timeout:
-            print(f"Timeout waiting for response from server for player {player_id}")
-
-    def sendPlayerID(self, player_id):
-        """Send a photon event with the player ID."""
-        if not isinstance(player_id, int):
-            raise ValueError("player_id must be an integer")
-        message = str(player_id).encode()
-        self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print(f"Sent photon event: {player_id}")
+            print("Timeout waiting for response from server")
 
     def listen_for_responses(self):
         """Continuously listen for incoming data on the receive socket."""
