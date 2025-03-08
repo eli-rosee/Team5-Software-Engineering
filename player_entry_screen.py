@@ -7,7 +7,7 @@ from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
 from client import PhotonNetwork  # Import the PhotonNetwork class
-
+from play_action_screen import PlayActionScreen #import player action screen
 
 def on_key_event(key):
     #print(f"Key pressed: {event.name}")
@@ -257,7 +257,29 @@ class PlayerEntryScreen(QWidget):
         self.install_input_event_listeners() 
         self.install_button_event_listeners()
         self.count = 0
-        
+
+    #player action screen
+    def get_player_data(self):
+        """Collect player data from Red and Green teams."""
+        red_players = []
+        green_players = []
+
+        for row in self.red_row:
+            player_id = row[3].text().strip()
+            code_name = row[4].text().strip()
+            equip_id = row[5].text().strip()
+            if player_id and code_name and equip_id:  # Only include players with valid data
+                red_players.append((player_id, code_name, equip_id))
+
+        for row in self.green_row:
+            player_id = row[3].text().strip()
+            code_name = row[4].text().strip()
+            equip_id = row[5].text().strip()
+            if player_id and code_name and equip_id:  # Only include players with valid data
+                green_players.append((player_id, code_name, equip_id))
+
+        return red_players, green_players
+    
     def add_player_by_key(self):
         for row_index, row in enumerate(self.red_row): 
                      row[1].setStyleSheet("color: black;")
@@ -294,12 +316,7 @@ class PlayerEntryScreen(QWidget):
         QApplication.processEvents()
 
         # Send player data to the server
-        self.photon_network.equipID(int(player_id_field.text()), equip_id.text(), code_name_field.text())
-
-        #print(f"Equipment ID Field Value: {equip_id.text()}")  
-
-        
-
+        self.photon_network.equipID(equip_id.text())
                 
     def change_tab_ind(self):
                 self.tab_ind +=1
@@ -724,6 +741,13 @@ class PlayerEntryScreen(QWidget):
             QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
         elif index == 33:  # F5 PreEntered Games
             print("Viewing PreEntered Games...")
+            # Collect player data from Red and Green teams
+            red_players, green_players = self.get_player_data()
+            
+            # Create PlayActionScreen as a top-level window
+            self.play_action_screen = PlayActionScreen(red_players, green_players, self.photon_network)
+            self.play_action_screen.show()  # Show the PlayActionScreen as a new window
+            
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
