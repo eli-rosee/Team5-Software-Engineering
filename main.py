@@ -46,6 +46,7 @@ def on_key_event(key):
             if countdown_window is None or not countdown_window.isVisible():
                 countdown_window = countdown.MainWindow()
                 countdown_window.showMaximized()
+                QTimer.singleShot(0, main_window.transition_to_play_action_screen)
                 print("Countdown window should now be visible")
             else:
                 print("Countdown window is already open.")
