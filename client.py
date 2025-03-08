@@ -24,9 +24,6 @@ class PhotonNetwork:
         self.receive_thread = threading.Thread(target=self.listen_for_responses, daemon=True)
         self.receive_thread.start()
 
-        # Track added players and their equipment IDs
-        self.player_equipment_map = {}  # {player_id: equipment_id}
-
     def send_start_signal(self):
         """Send the start signal ("202") to the game software."""
         message = "202".encode()
