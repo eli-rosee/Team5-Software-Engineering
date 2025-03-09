@@ -94,11 +94,8 @@ def on_key_event(key):
                 QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
             QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
         elif key == keyboard.Key.enter:
-            print(main_window)
-            if main_window is not None:
-                QTimer.singleShot(0, main_window.add_player_by_key)
-            else:
-                print("Main window not initialized yet.")
+            QTimer.singleShot(0, main_window.add_player_by_key)
+            
     except AttributeError as e:
         print(f"Error: Key press event encountered an issue: {e}")
 
