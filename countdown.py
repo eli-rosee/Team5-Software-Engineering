@@ -31,7 +31,7 @@ class CountdownWindow(QMainWindow):
         """Closes the countdown window and exits the application."""
         print("DEBUG: Closing Countdown Window...")
         self.close()
-        QApplication.quit()
+        #QApplication.quit()
 
     def show_logo(self):
         """Displays the logo before the countdown starts."""
@@ -42,7 +42,7 @@ class CountdownWindow(QMainWindow):
             print("Warning: Logo not found.")
 
         # Show logo for 3 seconds, then start countdown
-        QTimer.singleShot(3000, self.setup_background)
+        QTimer.singleShot(0, self.setup_background)
 
     def setup_background(self):
         """Sets the background image before starting the countdown."""
@@ -112,7 +112,7 @@ class CountdownWindow(QMainWindow):
         import play_action_screen  # Import here to avoid circular imports
         self.next_screen = play_action_screen.PlayActionScreen()
         self.next_screen.showMaximized()
-        self.close()  # Close countdown window
+        #self.close()  # Close countdown window
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
