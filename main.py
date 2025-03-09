@@ -87,13 +87,14 @@ def on_key_event(key):
             QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
             time.sleep(30)
             QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
-            main_window = "play_action"
+            main_window = play_action_screen_window 
 
         elif key == keyboard.Key.esc:
             if main_window and hasattr(main_window, 'timer'):
                 QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
             QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
         elif key == keyboard.Key.enter:
+            print(main_window)
             if main_window is not None:
                 QTimer.singleShot(0, main_window.add_player_by_key)
             else:
