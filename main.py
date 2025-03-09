@@ -16,6 +16,7 @@ countdown_window = None
 splash_window = None
 player_entry_screen_window = None  
 play_action_screen_window = None
+global play_action_handler
 
 class CountdownHandler(QObject):
     @pyqtSlot() 
@@ -93,6 +94,8 @@ def on_key_event(key):
                 QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
             QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
         elif key == keyboard.Key.enter:
+            main_window = player_entry_screen_window
+            print(main_window)
             if main_window is not None:
                 QTimer.singleShot(0, main_window.add_player_by_key)
             else:
