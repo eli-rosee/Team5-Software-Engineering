@@ -722,10 +722,13 @@ class PlayerEntryScreen(QWidget):
 
     def clear_all_players(self):
         for checkbox, arrow_label, num_label, player_id_field, code_name_field, equip_id in self.red_row + self.green_row:
-            checkbox.setChecked(False)
+            #checkbox.setChecked(False)
+            print(self.red_row)
             player_id_field.clear()
+            player_id_field.setReadOnly(False)
             code_name_field.clear()
             equip_id.clear()
+
 
         QApplication.processEvents()
         print("All player entries cleared.")
