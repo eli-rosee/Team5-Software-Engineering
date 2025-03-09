@@ -16,6 +16,7 @@ class PlayActionScreen(QWidget):
         self.green_players = green_players
         self.photon_network = photon_network
         self.player_entry_screen_class = player_entry_screen_class
+        main_window = player_entry_screen_class
 
         # Main layout
         main_layout = QHBoxLayout()
@@ -154,6 +155,7 @@ class PlayActionScreen(QWidget):
         # Reopen PlayerEntryScreen and pass the existing photon_network
         main_window = PlayerEntryScreen(photon_network=self.photon_network)
         main_window.showMaximized()
+        main_window = PlayActionScreen.player_entry_screen_class
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
