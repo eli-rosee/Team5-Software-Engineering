@@ -24,7 +24,7 @@ class CountdownWindow(QMainWindow):
 
         self.showMaximized()  # Fullscreen mode
 
-        # Step 1: Show the logo first
+         #Show the logo first
         self.show_logo()
 
     def show_logo(self):
