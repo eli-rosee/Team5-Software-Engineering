@@ -149,10 +149,11 @@ class PlayActionScreen(QWidget):
         from player_entry_screen import PlayerEntryScreen  # Import inside function to avoid circular import
         self._running = False  # Stop game thread
         self.close()  # Close the PlayActionScreen window
+        global main_window 
 
         # Reopen PlayerEntryScreen and pass the existing photon_network
-        self.player_entry_screen = PlayerEntryScreen(photon_network=self.photon_network)
-        self.player_entry_screen.showMaximized()
+        main_window = PlayerEntryScreen(photon_network=self.photon_network)
+        main_window.showMaximized()
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
