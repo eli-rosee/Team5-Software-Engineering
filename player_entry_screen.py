@@ -338,7 +338,8 @@ class PlayerEntryScreen(QWidget):
         QApplication.processEvents()
 
         # Send player data to the server
-        self.photon_network.equipID(equip_id.text())
+        if (equip_id.text() != ""):
+            self.photon_network.equipID(equip_id.text())
                 
     def change_tab_ind(self):
                 self.tab_ind +=1
@@ -723,7 +724,7 @@ class PlayerEntryScreen(QWidget):
     def clear_all_players(self):
         for checkbox, arrow_label, num_label, player_id_field, code_name_field, equip_id in self.red_row + self.green_row:
             #checkbox.setChecked(False)
-            print(self.red_row)
+            #print(self.red_row)
             player_id_field.clear()
             player_id_field.setReadOnly(False)
             code_name_field.clear()
