@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QPushButton
-from PyQt6.QtCore import QTimer, Qt
+from PyQt6.QtCore import Qt
 import random
 import threading
 import time
@@ -11,35 +11,52 @@ class PlayActionScreen(QWidget):
         self.showMaximized()
         self.setStyleSheet("background-color: black; color: white;")
 
-        # Store players with their equipment IDs
         self.red_players = red_players
         self.green_players = green_players
         self.photon_network = photon_network
+        self._running = True
 
-        # Main layout
+        self.init_ui()
+        self.start_traffic_generator()
+
+    def init_ui(self):
+        """Initialize the user interface."""
         main_layout = QHBoxLayout()
 
         # Red team layout
-        red_team_layout = QVBoxLayout()
-        red_team_label = QLabel("RED TEAM")
-        red_team_label.setStyleSheet("font-size: 20px; font-weight: bold; color: red;")
-        red_team_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        red_team_layout.addWidget(red_team_label)
-
-        # Add Red Team players dynamically
-        for player_id, player_name, equip_id in red_players:
-            player_label = QLabel(f"{player_id} - {player_name} (Equipment: {equip_id})")
-            player_label.setStyleSheet("font-size: 16px; color: white;")
-            player_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)  # Center-align player info
-            red_team_layout.addWidget(player_label)
-
-        # Add Red Team layout to the main layout
+        red_team_layout = self.create_team_layout("RED TEAM", "red", self.red_players)
         main_layout.addLayout(red_team_layout, stretch=1)
 
-        # Current Game Action and Return Button layout (vertical)
+        # Current action and return button layout
+        current_action_layout = self.create_current_action_layout()
+        main_layout.addLayout(current_action_layout, stretch=1)
+
+        # Green team layout
+        green_team_layout = self.create_team_layout("GREEN TEAM", "green", self.green_players)
+        main_layout.addLayout(green_team_layout, stretch=1)
+
+        self.setLayout(main_layout)
+
+    def create_team_layout(self, team_name, color, players):
+        """Create a layout for a team."""
+        team_layout = QVBoxLayout()
+        team_label = QLabel(team_name)
+        team_label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color};")
+        team_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        team_layout.addWidget(team_label)
+
+        for player_id, player_name, equip_id in players:
+            player_label = QLabel(f"{player_id} - {player_name} (Equipment: {equip_id})")
+            player_label.setStyleSheet("font-size: 16px; color: white;")
+            player_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            team_layout.addWidget(player_label)
+
+        return team_layout
+
+    def create_current_action_layout(self):
+        """Create the layout for current game action and return button."""
         current_action_layout = QVBoxLayout()
 
-        # Current Game Action label and text box
         current_action_label = QLabel("Current Game Action")
         current_action_label.setStyleSheet("font-size: 20px; font-weight: bold; color: white;")
         current_action_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -51,93 +68,54 @@ class PlayActionScreen(QWidget):
         self.current_action_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         current_action_layout.addWidget(self.current_action_text, stretch=1)
 
-        # Return to Player Entry Screen button
         return_button = QPushButton("Return to Player Entry Screen")
         return_button.setStyleSheet("background-color: white; color: black;")
         return_button.clicked.connect(self.return_to_entry_screen)
         current_action_layout.addWidget(return_button)
 
-        # Add Current Game Action and Button layout to the main layout
-        main_layout.addLayout(current_action_layout, stretch=1)
+        return current_action_layout
 
-        # Green team layout
-        green_team_layout = QVBoxLayout()
-        green_team_label = QLabel("GREEN TEAM")
-        green_team_label.setStyleSheet("font-size: 20px; font-weight: bold; color: green;")
-        green_team_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        green_team_layout.addWidget(green_team_label)
-
-        # Add Green Team players dynamically
-        for player_id, player_name, equip_id in green_players:
-            player_label = QLabel(f"{player_id} - {player_name} (Equipment: {equip_id})")
-            player_label.setStyleSheet("font-size: 16px; color: white;")
-            player_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)  # Center-align player info
-            green_team_layout.addWidget(player_label)
-
-        # Add Green Team layout to the main layout
-        main_layout.addLayout(green_team_layout, stretch=1)
-
-        self.setLayout(main_layout)
-
-        # Start traffic generator
-        self._running = True
+    def start_traffic_generator(self):
+        """Start the traffic generator thread."""
         self.traffic_thread = threading.Thread(target=self.generate_traffic, daemon=True)
         self.traffic_thread.start()
 
     def generate_traffic(self):
         """Simulate game traffic and update the current game action."""
         counter = 0
-        while self._running:
-            if len(self.red_players) >= 1 and len(self.green_players) >= 1:  # Ensure there are players
-                # Randomly select a red and green player
-                red_player = random.choice(self.red_players)
-                green_player = random.choice(self.green_players)
+        while self._running and self.red_players and self.green_players:
+            red_player = random.choice(self.red_players)
+            green_player = random.choice(self.green_players)
 
-                # Extract equipment IDs
-                red_equip_id = red_player[2]  # Equipment ID is at index 2
-                green_equip_id = green_player[2]  # Equipment ID is at index 2
+            if random.randint(1, 2) == 1:
+                action_text = f"{red_player[1]} hit {green_player[1]}"
+                equipment_code = f"{red_player[2]}:{green_player[2]}"
+            else:
+                action_text = f"{green_player[1]} hit {red_player[1]}"
+                equipment_code = f"{green_player[2]}:{red_player[2]}"
 
-                # Simulate interactions between players
-                if random.randint(1, 2) == 1:
-                    action_text = f"{red_player[1]} hit {green_player[1]}"
-                    equipment_code = f"{red_equip_id}:{green_equip_id}"
-                else:
-                    action_text = f"{green_player[1]} hit {red_player[1]}"
-                    equipment_code = f"{green_equip_id}:{red_equip_id}"
+            self.append_to_current_action(f"<div style='text-align: center;'>{action_text}</div>")
+            self.photon_network.equipID(equipment_code)
 
-                # Update the current game action with centered text using HTML
-                centered_text = f"<div style='text-align: center;'>{action_text}</div>"
-                self.append_to_current_action(centered_text)
+            if counter == 10:
+                self.append_to_current_action(f"<div style='text-align: center;'>{red_player[1]} hit the base!</div>")
+                self.photon_network.equipID(f"{red_player[2]}:43")
+            elif counter == 20:
+                self.append_to_current_action(f"<div style='text-align: center;'>{green_player[1]} hit the base!</div>")
+                self.photon_network.equipID(f"{green_player[2]}:53")
 
-                self.photon_network.equipID(equipment_code)  # Broadcast equipment code to server
-
-                # Simulate base hits after specific iterations
-                if counter == 10:
-                    base_hit_text = f"{red_player[1]} hit the base!"
-                    centered_base_hit_text = f"<div style='text-align: center;'>{base_hit_text}</div>"
-                    self.append_to_current_action(centered_base_hit_text)
-                    self.photon_network.equipID(f"{red_equip_id}:43")  # Red team base hit
-                elif counter == 20:
-                    base_hit_text = f"{green_player[1]} hit the base!"
-                    centered_base_hit_text = f"<div style='text-align: center;'>{base_hit_text}</div>"
-                    self.append_to_current_action(centered_base_hit_text)
-                    self.photon_network.equipID(f"{green_equip_id}:53")  # Green team base hit
-
-                counter += 1
-                time.sleep(random.randint(1, 3))  # Wait 1-3 seconds between messages
+            counter += 1
+            time.sleep(random.randint(1, 3))
 
     def append_to_current_action(self, text):
         """Append text to the current action box and ensure it scrolls down."""
-        self.current_action_text.append(text)  # Append text
-        self.current_action_text.ensureCursorVisible()  # Ensure cursor is visible
-        cursor = self.current_action_text.textCursor()  # Get cursor
-        cursor.movePosition(cursor.MoveOperation.End)  # Move cursor to the end
-        self.current_action_text.setTextCursor(cursor)  # Set cursor position
+        self.current_action_text.append(text)
+        self.current_action_text.ensureCursorVisible()
 
     def return_to_entry_screen(self):
         """Stop the traffic generator and return to the player entry screen."""
-        self._running = False  # Stop traffic generator thread
-        self.close()  # Close PlayActionScreen window
+        self._running = False
+        self.close()
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
