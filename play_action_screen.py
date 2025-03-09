@@ -152,10 +152,15 @@ class PlayActionScreen(QWidget):
         self.close()  # Close the PlayActionScreen window
         global main_window 
 
-        # Reopen PlayerEntryScreen and pass the existing photon_network
-        main_window = PlayerEntryScreen(photon_network=self.photon_network)
+        if self.photon_network is None:
+            print("[DEBUG] Creating new PhotonNetwork instance")
+            from client import PhotonNetwork  # Import inside function
+            self.photon_network = PhotonNetwork(server_ip="127.0.0.1", server_port=7500, client_port=7501)
+
+        # Create a new instance of PlayerEntryScreen
+        print("[DEBUG] Reopening PlayerEntryScreen...")
+        main_window = self.player_entry_screen_class(photon_network=self.photon_network)
         main_window.showMaximized()
-        main_window = PlayActionScreen.player_entry_screen_class
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
