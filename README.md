@@ -19,6 +19,7 @@
     
   3. Install required libraries
      - sudo apt update (password: student)
+     - sudo apt upgrade
      - sudo apt install python3-pip -y
      - pip install PyQt6
      - sudo pip3 install pynput
