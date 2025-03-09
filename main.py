@@ -93,9 +93,10 @@ def on_key_event(key):
                 QMetaObject.invokeMethod(main_window.timer, "stop", Qt.ConnectionType.QueuedConnection)
             QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
         elif key == keyboard.Key.enter:
-            player_entry_screen_window = player_entry_screen.PlayerEntryScreen() 
-            main_window = player_entry_screen_window 
-            QTimer.singleShot(0, main_window.add_player_by_key)
+            if main_window is not None:
+                QTimer.singleShot(0, main_window.add_player_by_key)
+            else:
+                print("ERROR: Main window is None. Cannot add player.")
             
     except AttributeError as e:
         print(f"Error: Key press event encountered an issue: {e}")
