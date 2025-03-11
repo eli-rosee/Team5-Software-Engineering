@@ -9,28 +9,6 @@ from psycopg2 import sql
 from client import PhotonNetwork  # Import the PhotonNetwork class
 from play_action_screen import PlayActionScreen #import player action screen
 
-def on_key_event(key):
-    #print(f"Key pressed: {event.name}")
-    try:
-        if key == keyboard.Key.f3:
-            print("Start game")
-            
-        elif key == keyboard.Key.f1:
-            print("Back to loading screen")
-        elif key == keyboard.Key.tab:
-            #main_window.change_tab_ind()
-            QTimer.singleShot(0, self.change_tab_ind)  
-            #print(main_window.tab_ind)
-        elif key == keyboard.Key.esc:
-            QMetaObject.invokeMethod(self.timer, "stop", Qt.ConnectionType.QueuedConnection)
-            QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
-        elif key == keyboard.Key.enter:
-            #print("test")
-                QTimer.singleShot(0, self.add_player_by_key)
-    except AttributeError:  
-        print("test")
-        #name
-
 
 class PlayerEntryScreen(QWidget):
     photon_network_instance = None
@@ -303,6 +281,7 @@ class PlayerEntryScreen(QWidget):
         return red_players, green_players
     
     def add_player_by_key(self):
+        print(self.tab_ind)
         for row_index, row in enumerate(self.red_row): 
                      row[1].setStyleSheet("color: black;")
         for row_index, row in enumerate(self.green_row):  
@@ -817,8 +796,6 @@ if __name__ == "__main__":
     self = PlayerEntryScreen()
     self.show()
     QMetaObject.invokeMethod(self.red_row[0][3], "setFocus", Qt.ConnectionType.QueuedConnection)
-    listener = keyboard.Listener(on_press=on_key_event)
-    listener.start()
     timer = QTimer()
     timer.timeout.connect(self.toggle_visibility)
     timer.start(100)
