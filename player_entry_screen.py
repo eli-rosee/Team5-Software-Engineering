@@ -2,11 +2,12 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLay
 from PyQt6.QtCore import Qt, QTimer,QMetaObject,QEvent
 from functools import partial
 import sys
+import signal
 from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
-from client import PhotonNetwork  
-from play_action_screen import PlayActionScreen 
+from client import PhotonNetwork  # Import the PhotonNetwork class
+from play_action_screen import PlayActionScreen #import player action screen
 from PyQt6.QtCore import QThread, pyqtSignal
 
 class sortPlayers(QThread):
@@ -19,18 +20,6 @@ class sortPlayers(QThread):
         def run(self):
             self.parent.sort_players()
             self.finished.emit()
-
-class ChangeTabInd(QThread):
-    finished = pyqtSignal()
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.parent = parent
-
-    def run(self):
-        """Runs the change_tab_ind function in a separate thread."""
-        self.parent.change_tab_ind()
-        self.finished.emit() 
 
 class PlayerEntryScreen(QWidget):
     photon_network_instance = None
@@ -46,7 +35,6 @@ class PlayerEntryScreen(QWidget):
     
     def __init__(self, photon_network=None):
         super().__init__()
-        self.change_tab_thread = ChangeTabInd(self) 
         self.setWindowTitle("Player Entry Screen")
         self.setGeometry(100, 100, 800, 600)
         #self.showFullScreen()
@@ -55,6 +43,7 @@ class PlayerEntryScreen(QWidget):
         self.popup_active = False 
         self.last_player_id = None
         QApplication.setStyle("windows") 
+
 
         
         if photon_network is None:
@@ -442,8 +431,7 @@ class PlayerEntryScreen(QWidget):
                         next_checkbox, next_arrow, next_num, next_player_id, next_code_name, next_eqip_id = self.red_row[j]
 
                         if next_player_id.text().strip() != "" or next_code_name.text().strip() != "" or next_eqip_id.text().strip() != "":
-                            #QTimer.singleShot(0, self.change_tab_ind) 
-                            self.change_tab_thread.start()
+                            QTimer.singleShot(0, self.change_tab_ind) 
                             player_id_field.setText(next_player_id.text())
                             player_id_field.setReadOnly(True)
                             code_name_field.setText(next_code_name.text())
@@ -473,8 +461,7 @@ class PlayerEntryScreen(QWidget):
                         next_checkbox, next_arrow, next_num, next_player_id, next_code_name, next_eqip_id = self.green_row[j]
 
                         if next_player_id.text().strip() != "" or next_code_name.text().strip() != "" or next_eqip_id.text().strip() != "":
-                            #QTimer.singleShot(0, self.change_tab_ind) 
-                            self.change_tab_thread.start()
+                            QTimer.singleShot(0, self.change_tab_ind) 
                             player_id_field.setText(next_player_id.text())
                             player_id_field.setReadOnly(True)
                             code_name_field.setText(next_code_name.text())
@@ -561,7 +548,6 @@ class PlayerEntryScreen(QWidget):
         text = self.directions.text()
         number = text.replace("Enter ", "").replace("'s CODE NAME:", "")
        
-        print(player_id, code_name, equip_id)
         if "CODE NAME:" in self.directions.text() and field.text() != number:
                 print('1')
                 field.setText("")
@@ -634,8 +620,7 @@ class PlayerEntryScreen(QWidget):
             print('6')
 
             field3.setReadOnly(True)
-            #QTimer.singleShot(0, self.change_tab_ind) 
-            self.change_tab_thread.start()
+            QTimer.singleShot(0, self.change_tab_ind) 
 
             self.popup_active = False
   
@@ -678,8 +663,7 @@ class PlayerEntryScreen(QWidget):
 
     def tab_to_target_red(self, target_index, extra_steps=0):
         if self.tab_ind != target_index or extra_steps > 0:
-            #self.change_tab_ind()  
-            self.change_tab_thread.start()
+            self.change_tab_ind()  
 
             if extra_steps > 0:
                 extra_steps -= 1  
@@ -689,8 +673,7 @@ class PlayerEntryScreen(QWidget):
 
     def tab_to_target_green(self, target_index, extra_steps=0):
         if self.tab_ind != target_index or extra_steps > 0:
-            #self.change_tab_ind()  
-            self.change_tab_thread.start()
+            self.change_tab_ind()  
 
             if extra_steps > 0:
                 extra_steps -= 1  
