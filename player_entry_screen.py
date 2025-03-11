@@ -473,6 +473,7 @@ class PlayerEntryScreen(QWidget):
 
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
         #database check here
+        print("test")
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
@@ -536,15 +537,18 @@ class PlayerEntryScreen(QWidget):
         number = text.replace("Enter ", "").replace("'s CODE NAME:", "")
        
         if "CODE NAME:" in self.directions.text() and field.text() != number:
+                print('1')
                 field.setText("")
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
                 return
         elif player_id == "":
+                print('2')
                 self.directions.setText("Player Does not have an ID")
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
                 return
 
         elif code_name == "" and player_id!="":
+                print('3')
                 if (self.count%3 ==0):
                     conn = connect()
                     if conn:
@@ -565,6 +569,7 @@ class PlayerEntryScreen(QWidget):
                 self.count +=1
                 return
         elif (equip_id=="" and code_name!="" and player_id!=""):
+                print('4')
                 if (self.count%3 ==0):
                     if (equip_id=="" and code_name!="" and player_id!=""):
                         conn = connect()
@@ -588,6 +593,7 @@ class PlayerEntryScreen(QWidget):
                 self.count +=1
                 return
         else:
+            print('5')
             checkbox.setEnabled(False)
             self.sort_players()
             field2.setReadOnly(True)
