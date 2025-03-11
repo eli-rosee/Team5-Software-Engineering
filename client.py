@@ -34,15 +34,7 @@ class PhotonNetwork:
         """Send the equipment ID to the server."""
         message = equip_id.encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print(f"Sent equipment ID to server: {equip_id}")
-
-        # Wait for the server to respond
-        try:
-            data, _ = self.receive_socket.recvfrom(1024)
-            response = data.decode('utf-8')
-            print(f"Received response from server: {response}")
-        except socket.timeout:
-            print("Timeout waiting for response from server")
+        print(f"{equip_id}")
 
     def listen_for_responses(self):
         """Continuously listen for incoming data on the receive socket."""
