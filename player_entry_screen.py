@@ -8,7 +8,18 @@ import psycopg2
 from psycopg2 import sql
 from client import PhotonNetwork  # Import the PhotonNetwork class
 from play_action_screen import PlayActionScreen #import player action screen
+from PyQt6.QtCore import QThread, pyqtSignal
 
+class sortPlayers(QThread):
+        finished = pyqtSignal()
+
+        def __init__(self, parent):
+            super().__init__(parent)
+            self.parent = parent
+
+        def run(self):
+            self.parent.sort_players()
+            self.finished.emit()
 
 class PlayerEntryScreen(QWidget):
     photon_network_instance = None
@@ -321,6 +332,7 @@ class PlayerEntryScreen(QWidget):
             self.photon_network.equipID(equip_id.text())
                 
     def change_tab_ind(self):
+                print("test_tab")
                 self.tab_ind +=1
                 if (self.tab_ind == 38):
                     self.tab_ind = 0
@@ -594,16 +606,16 @@ class PlayerEntryScreen(QWidget):
                 return
         else:
             print('5')
-            checkbox.setEnabled(False)
-            self.sort_players()
+            print(self)
+            self.worker = sortPlayers(self)
+            self.worker.finished.connect(lambda: print("Sorting complete!"))
+            self.worker.start()
+            
             field2.setReadOnly(True)
-            #QTimer.singleShot(0, main_window.change_tab_ind) 
+            print('6')
 
-        # if not self.popup_active:  
-                
-                #self.show_popup_input(player_id, code_name)
             field3.setReadOnly(True)
-            QTimer.singleShot(50, self.change_tab_ind) 
+            QTimer.singleShot(0, self.change_tab_ind) 
 
             self.popup_active = False
 
