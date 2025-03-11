@@ -422,6 +422,7 @@ class PlayerEntryScreen(QWidget):
                         self.green_row[index // 2][1].setStyleSheet("font-weight: bold; color: black;")
 
     def sort_players(self):
+            print("sort")
             for i in range(len(self.red_row) - 1):
                 checkbox, arrow_label, num_label, player_id_field, code_name_field,equip_id = self.red_row[i]
 
@@ -485,7 +486,6 @@ class PlayerEntryScreen(QWidget):
 
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
         #database check here
-        print("test")
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
@@ -607,9 +607,15 @@ class PlayerEntryScreen(QWidget):
         else:
             print('5')
             print(self)
-            self.worker = sortPlayers(self)
-            self.worker.finished.connect(lambda: print("Sorting complete!"))
+            if hasattr(self, "worker") and self.worker.isRunning():
+                print("Previous sorting still running. Skipping new sort.")
+                return
+
+    # Create and start the worker thread
+            self.worker = sortPlayers(self)  # Pass PlayerEntryScreen instance
+            self.worker.finished.connect(self.on_sort_finished)  # Handle UI update after sorting
             self.worker.start()
+            
             
             field2.setReadOnly(True)
             print('6')
