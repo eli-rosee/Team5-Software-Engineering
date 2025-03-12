@@ -109,8 +109,8 @@ if __name__ == "__main__":
     listener = keyboard.Listener(on_press=on_key_event)
     listener.start()
 
-    server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
-    server_thread.start()
+    #server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
+    #server_thread.start()
 
 
     try:
