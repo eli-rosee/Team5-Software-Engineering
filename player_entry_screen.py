@@ -55,13 +55,11 @@ class PlayerEntryScreen(QWidget):
         self.popup_active = False 
         self.last_player_id = None
         QApplication.setStyle("windows") 
-
         
         if photon_network is None:
             if PlayerEntryScreen.photon_network_instance is None:
                 PlayerEntryScreen.photon_network_instance = self.create_photon_network()
-            else:
-                self.photon_network = PlayerEntryScreen.photon_network_instance
+            self.photon_network = PlayerEntryScreen.photon_network_instance 
         else:
             self.photon_network = photon_network
 
