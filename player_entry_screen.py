@@ -164,7 +164,7 @@ class PlayerEntryScreen(QWidget):
             field3=input_field3
             player_num=i
             team="Red"
-            self.on_checkbox_toggled(checkbox, field, field2, field3, player_num, team, Qt.Checked)
+            self.on_checkbox_toggled(checkbox, field, field2, field3, player_num, team, Qt.CheckState.Unchecked)
 
             #checkbox.stateChanged.connect(lambda state, field=input_field1, field2=input_field2, player_num=i, team="Red": self.on_checkbox_toggled(state, field, field2, player_num, team))
 
@@ -242,7 +242,7 @@ class PlayerEntryScreen(QWidget):
             fiedl3=input_field3
             player_num=i
             team="Green"
-            self.on_checkbox_toggled(checkbox, field, field2, field3, player_num, team, Qt.Checked)
+            self.on_checkbox_toggled(checkbox, field, field2, field3, player_num, team, Qt.CheckState.Unchecked)
             #checkbox.stateChanged.connect(lambda state, field=input_field1, field2=input_field2, player_num=i, team="Green": self.on_checkbox_toggled(state, field, field2, player_num, team))
 
 
