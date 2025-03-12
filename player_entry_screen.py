@@ -441,7 +441,6 @@ class PlayerEntryScreen(QWidget):
                     password="student",
                     port=DB_PORT
                 )
-                print("Connected to PostgreSQL successfully!")
                 return conn
             except psycopg2.Error as e:
                 print("Database connection failed:", e)
