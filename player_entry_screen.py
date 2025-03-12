@@ -722,6 +722,13 @@ class PlayerEntryScreen(QWidget):
         QApplication.processEvents()
         print("All player entries cleared.")
 
+    def open_play_action_screen(self):
+        """Opens PlayActionScreen while keeping PlayerEntryScreen hidden."""
+        red_players, green_players = self.get_player_data()
+        self.play_action_screen = PlayActionScreen(red_players, green_players, self.photon_network, self)
+        self.hide()
+        self.play_action_screen.showMaximized()
+
     def on_button_clicked(self, index, button):
         self.directions.setText(f"Button {index} clicked: {button.text()}")
 
