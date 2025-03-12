@@ -44,9 +44,6 @@ class PhotonNetwork:
         Send the player ID, equipment ID, and player name to the server.
         If equip_id and player_name are provided, send them along with the player ID.
         """
-        if not isinstance(player_id, int):
-            raise ValueError("player_id must be an integer")
-
         # Send the player ID, equipment ID, and player name to the server
         if equip_id is not None and player_name is not None:
             message = f"{player_id}:{equip_id}:{player_name}".encode()
