@@ -587,7 +587,9 @@ class PlayerEntryScreen(QWidget):
 
                 field.setReadOnly(True)
                 self.directions.setText(f"Enter {player_id}'s CODE NAME:")
+                QApplication.processEvents()
                 QMetaObject.invokeMethod(field2, "setFocus", Qt.ConnectionType.QueuedConnection)
+                QApplication.processEvents()
                 field2.setReadOnly(False)
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
                 self.count +=1
