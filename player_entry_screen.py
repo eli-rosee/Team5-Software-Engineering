@@ -8,18 +8,7 @@ import psycopg2
 from psycopg2 import sql
 from client import PhotonNetwork  # Import the PhotonNetwork class
 from play_action_screen import PlayActionScreen #import player action screen
-from PyQt6.QtCore import QThread, pyqtSignal
 
-class sortPlayers(QThread):
-        finished = pyqtSignal()
-
-        def __init__(self, parent):
-            super().__init__(parent)
-            self.parent = parent
-
-        def run(self):
-            self.parent.sort_players()
-            self.finished.emit()
 
 class PlayerEntryScreen(QWidget):
     photon_network_instance = None
@@ -422,7 +411,6 @@ class PlayerEntryScreen(QWidget):
                         self.green_row[index // 2][1].setStyleSheet("font-weight: bold; color: black;")
 
     def sort_players(self):
-            print("sort")
             for i in range(len(self.red_row) - 1):
                 checkbox, arrow_label, num_label, player_id_field, code_name_field,equip_id = self.red_row[i]
 
@@ -486,6 +474,7 @@ class PlayerEntryScreen(QWidget):
 
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
         #database check here
+        print("test")
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
@@ -607,14 +596,7 @@ class PlayerEntryScreen(QWidget):
         else:
             print('5')
             print(self)
-            if hasattr(self, "worker") and self.worker.isRunning():
-                print("Previous sorting still running. Skipping new sort.")
-                return
-
-    # Create and start the worker thread
-            self.worker = sortPlayers(self)  # Pass PlayerEntryScreen instance
-            self.worker.start()
-            
+            self.sort_players()
             
             field2.setReadOnly(True)
             print('6')
@@ -623,6 +605,45 @@ class PlayerEntryScreen(QWidget):
             QTimer.singleShot(0, self.change_tab_ind) 
 
             self.popup_active = False
+
+
+    def show_popup_input(self, player_id, code_name):
+            if self.popup_active: 
+                return
+            
+            if (not self.last_player_id == "") and (self.last_player_id == player_id):
+                return
+
+            self.last_player_id = player_id
+
+            self.popup_active = True 
+            popup = QDialog(self)
+            popup.setWindowTitle("Enter Equipment ID")
+            popup.setModal(True)  
+            popup.setStyleSheet("background-color: black; color: white;")  
+            popup.resize(400, 200)  
+
+            layout = QVBoxLayout()
+
+            self.directions.setText(f"Player {player_id} - Equipment ID")
+            label = QLabel(f"Enter Equipment ID for Player {player_id}\nCODE NAME: {code_name}")
+            layout.addWidget(label)
+
+            input_field = QLineEdit()
+            input_field.setPlaceholderText("Enter Equipment ID...")
+            layout.addWidget(input_field)
+
+            button_layout = QHBoxLayout()
+
+            confirm_button = QPushButton("Confirm")
+            confirm_button.clicked.connect(lambda: self.process_equipment_id(popup, player_id, code_name, input_field.text()))
+            button_layout.addWidget(confirm_button)
+
+            layout.addLayout(button_layout)
+            popup.setLayout(layout)
+
+            popup.exec()  
+            self.popup_active = False 
   
 
     def install_input_event_listeners(self):
