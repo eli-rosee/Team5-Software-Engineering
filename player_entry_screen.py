@@ -61,10 +61,8 @@ class PlayerEntryScreen(QWidget):
             if PlayerEntryScreen.photon_network_instance is None:
                 PlayerEntryScreen.photon_network_instance = self.create_photon_network()
             else:
-                print("DEBUG: Reusing existing PhotonNetwork instance")
-            self.photon_network = PlayerEntryScreen.photon_network_instance
+                self.photon_network = PlayerEntryScreen.photon_network_instance
         else:
-            print("DEBUG: Reusing provided PhotonNetwork instance")
             self.photon_network = photon_network
 
         self.timer = QTimer(self)
@@ -312,7 +310,11 @@ class PlayerEntryScreen(QWidget):
         QApplication.processEvents()
 
         if (equip_id.text() != ""):
-            self.photon_network.equipID(equip_id.text())
+            try:
+                equip_id_value = int(equip_id.text().strip()) 
+                self.photon_network.equipID(equip_id_value)
+            except ValueError: 
+                print("Error: equip_id contains non-numeric text")
                 
     def change_tab_ind(self):
                 self.tab_ind +=1
