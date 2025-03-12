@@ -502,6 +502,7 @@ class PlayerEntryScreen(QWidget):
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
+        print(player_id, code_name, equip_id)
         
         DB_NAME = "photon"
         DB_HOST = "127.0.0.1"
