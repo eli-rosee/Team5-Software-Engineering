@@ -42,13 +42,13 @@ class PlayActionHandler(QObject):
         if play_action_screen_window is None or not play_action_screen_window.isVisible():
             print("DEBUG: Creating new PlayActionScreen...")
             from player_entry_screen import PlayerEntryScreen 
+            red_players, green_players = player_entry_screen_window.get_player_data()
             play_action_screen_window = play_action_screen.PlayActionScreen(
-                red_players=[("6005", "Player1", "101"), ("5000", "Player2", "102")],  
-                green_players=[("6006", "Player3", "201"), ("5001", "Player4", "202")],
-                photon_network= None, 
-                player_entry_screen_class=player_entry_screen.PlayerEntryScreen  # Pass class reference
-
-            )  
+                red_players=red_players,
+                green_players=green_players,
+                photon_network=player_entry_screen_window.photon_network,  
+                player_entry_screen_instance=player_entry_screen_window  # ✅ Pass the instance, not class!
+            )   
             play_action_screen_window.showMaximized()
 
             print("DEBUG: PlayActionScreen should now be visible.")
