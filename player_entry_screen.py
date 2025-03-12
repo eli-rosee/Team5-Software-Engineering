@@ -580,6 +580,10 @@ class PlayerEntryScreen(QWidget):
                         #print(player)                        
                         if player:  
                             field2.setText(player)
+                            QApplication.processEvents()
+                            QMetaObject.invokeMethod(field3, "setFocus", Qt.ConnectionType.QueuedConnection)
+                            QApplication.processEvents()
+                            return
                         else: 
                             field2.setText("")
 
