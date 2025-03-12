@@ -1,37 +1,33 @@
 from PyQt6.QtWidgets import QMainWindow, QLabel, QApplication
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, pyqtSignal
 import sys
 import os
 
 class CountdownWindow(QMainWindow):
-    def __init__(self):
+    countdown_finished = pyqtSignal()
+    def __init__(self, parent=None):
         super().__init__()
 
-        # Set window properties
         self.setGeometry(700, 300, 500, 500)
         self.setStyleSheet("background-color: black;")
 
-        # Background label (for `background.tif`)
         self.background_label = QLabel(self)
         self.background_label.setScaledContents(True)
         self.background_label.setGeometry(0, 0, self.width(), self.height())
 
-        # Countdown image label
         self.countdown_label = QLabel(self)
         self.countdown_label.setScaledContents(True)
         self.countdown_label.setGeometry(0, 0, self.width(), self.height())
 
-        self.showMaximized()  # Fullscreen mode
+        self.showMaximized()  
 
-         #Show the logo first
         self.show_logo()
 
     def force_close(self):
         """Closes the countdown window and exits the application."""
         print("DEBUG: Closing Countdown Window...")
         self.close()
-        #QApplication.quit()
 
     def show_logo(self):
         """Displays the logo before the countdown starts."""
@@ -41,7 +37,6 @@ class CountdownWindow(QMainWindow):
         else:
             print("Warning: Logo not found.")
 
-        # Show logo for 3 seconds, then start countdown
         QTimer.singleShot(0, self.setup_background)
 
     def setup_background(self):
@@ -52,16 +47,15 @@ class CountdownWindow(QMainWindow):
         else:
             print("Warning: Background image not found.")
 
-        # Start the countdown
         self.start_countdown()
 
     def start_countdown(self):
         """Starts the countdown timer and updates images every second."""
-        self.countdown_time = 30  # Start countdown from 30 seconds
+        self.countdown_time = 30  
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_countdown)
         self.update_image()
-        self.timer.start(1000)  # Update every second
+        self.timer.start(1000)  
 
     def update_countdown(self):
         """Updates the countdown image every second."""
@@ -71,23 +65,22 @@ class CountdownWindow(QMainWindow):
             self.update_image()
         else:
             self.timer.stop()
-            self.show_final_image()  # Show the final "0" image before transitioning
+            self.show_final_image()  
 
     def update_image(self):
         """Loads and displays the appropriate countdown image, with alert effect in the last 3 seconds."""
-        if self.countdown_time <= 3:  # Show alert-on.tif when reaching last 3 seconds
+        if self.countdown_time <= 3:  
             alert_path = "graphics/alert-on.tif"
             if os.path.exists(alert_path):
                 self.background_label.setPixmap(QPixmap(alert_path))
             else:
                 print("Warning: Alert image not found.")
 
-        # Update countdown number
         image_path = f"graphics/countdown_images/{self.countdown_time}.tif"
         if os.path.exists(image_path):
             self.countdown_label.setPixmap(QPixmap(image_path))
         else:
-            print(f"Warning: {image_path} not found.")  # Fallback warning if images are missing
+            print(f"Warning: {image_path} not found.")  
 
     def show_final_image(self):
         """Displays the final 'countdown_0.tif' before transitioning."""
@@ -97,9 +90,7 @@ class CountdownWindow(QMainWindow):
         else:
             print("Warning: Final countdown image not found.")
 
-        # Hold final image for 1 second before transitioning
         QTimer.singleShot(1000, self.force_close)
-        #QTimer.singleShot(1000, self.launch_next_screen)
 
     def resizeEvent(self, event):
         """Ensures the images resize with the window."""
@@ -109,10 +100,9 @@ class CountdownWindow(QMainWindow):
 
     def launch_next_screen(self):
         """Transition to player entry screen after countdown."""
-        import play_action_screen  # Import here to avoid circular imports
+        import play_action_screen  
         self.next_screen = play_action_screen.PlayActionScreen()
         self.next_screen.showMaximized()
-        #self.close()  # Close countdown window
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
