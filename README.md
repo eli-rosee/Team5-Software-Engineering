@@ -21,7 +21,7 @@
      - sudo apt update (password: student)
      - sudo apt install python3-pip -y
      - pip install PyQt6
-     - sudo pip3 install pynput
+     - sudo pip3 install pynput==1.7.6
      - pip install psycopg2-binary
      - sudo apt install libxcb-cursor0
     
