@@ -13,15 +13,15 @@ from countdown import CountdownWindow
 from PyQt6.QtCore import QThread, pyqtSignal
 
 class sortPlayers(QThread):
-        finished = pyqtSignal()
+    finished = pyqtSignal(list, list)  # Signal to return sorted data
 
-        def __init__(self, parent):
-            super().__init__(parent)
-            self.parent = parent
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
 
-        def run(self):
-            self.parent.sort_players()
-            self.finished.emit()
+    def run(self):
+        red_sorted, green_sorted = self.parent.sort_players()
+        self.finished.emit(red_sorted, green_sorted) 
 
 class ChangeTabInd(QThread):
     finished = pyqtSignal()
@@ -400,67 +400,29 @@ class PlayerEntryScreen(QWidget):
                         self.green_row[index // 2][1].setStyleSheet("font-weight: bold; color: black;")
 
     def sort_players(self):
-            for i in range(len(self.red_row) - 1):
-                checkbox, arrow_label, num_label, player_id_field, code_name_field,equip_id = self.red_row[i]
+        """ Sorts players without modifying UI directly """
+        red_sorted = []
+        green_sorted = []
 
-                if player_id_field.text().strip() == "" and code_name_field.text().strip() == "":
-                    for j in range(i + 1, len(self.red_row)):
-                        next_checkbox, next_arrow, next_num, next_player_id, next_code_name, next_eqip_id = self.red_row[j]
+        # Process Red Team
+        for i in range(len(self.red_row)):
+            player_id = self.red_row[i][3].text().strip()
+            code_name = self.red_row[i][4].text().strip()
+            equip_id = self.red_row[i][5].text().strip()
 
-                        if next_player_id.text().strip() != "" or next_code_name.text().strip() != "" or next_eqip_id.text().strip() != "":
-                            self.change_tab_thread.start()
-                            player_id_field.setText(next_player_id.text())
-                            player_id_field.setReadOnly(True)
-                            code_name_field.setText(next_code_name.text())
-                            code_name_field.setReadOnly(True)
-                            equip_id.setText(next_eqip_id.text())
-                            equip_id.setReadOnly(True)
+            if player_id and code_name and equip_id:
+                red_sorted.append((player_id, code_name, equip_id))
 
-                            next_player_id.clear()
-                            next_player_id.setReadOnly(False)
-                            next_code_name.clear()
-                            next_code_name.setReadOnly(True)
-                            next_eqip_id.clear()
-                            next_eqip_id.setReadOnly(True)
+        # Process Green Team
+        for i in range(len(self.green_row)):
+            player_id = self.green_row[i][3].text().strip()
+            code_name = self.green_row[i][4].text().strip()
+            equip_id = self.green_row[i][5].text().strip()
 
-                            checkbox.setChecked(True)
-                            checkbox.setCheckState(Qt.CheckState.Checked)
-                            next_checkbox.setChecked(False)
-                            next_checkbox.setCheckState(Qt.CheckState.Unchecked)
-                            next_checkbox.setEnabled(True)
-                            
-                            break 
-            for i in range(len(self.green_row) - 1):
-                checkbox, arrow_label, num_label, player_id_field, code_name_field, equip_id  = self.green_row[i]
+            if player_id and code_name and equip_id:
+                green_sorted.append((player_id, code_name, equip_id))
 
-                if player_id_field.text().strip() == "" and code_name_field.text().strip() == "":
-                    for j in range(i + 1, len(self.green_row)):
-                        next_checkbox, next_arrow, next_num, next_player_id, next_code_name, next_eqip_id = self.green_row[j]
-
-                        if next_player_id.text().strip() != "" or next_code_name.text().strip() != "" or next_eqip_id.text().strip() != "":
-                            self.change_tab_thread.start()
-                            player_id_field.setText(next_player_id.text())
-                            player_id_field.setReadOnly(True)
-                            code_name_field.setText(next_code_name.text())
-                            code_name_field.setReadOnly(True)
-                            equip_id.setText(next_eqip_id.text())
-                            equip_id.setReadOnly(True)
-
-                            next_player_id.clear()
-                            next_player_id.setReadOnly(False)
-                            next_code_name.clear()
-                            next_code_name.setReadOnly(True)
-                            next_eqip_id.clear()
-                            next_eqip_id.setReadOnly(True)
-
-                            checkbox.setChecked(True)
-                            checkbox.setCheckState(Qt.CheckState.Checked)
-                            next_checkbox.setChecked(False)
-                            next_checkbox.setCheckState(Qt.CheckState.Unchecked)
-                            next_checkbox.setEnabled(True)
-                            
-                            break 
-
+        return red_sorted, green_sorted
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
         player_id = field.text().strip()
         code_name = field2.text().strip()
