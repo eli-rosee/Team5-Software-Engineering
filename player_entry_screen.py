@@ -573,9 +573,8 @@ class PlayerEntryScreen(QWidget):
 
         elif code_name == "" and player_id!="":
                 print('3')
-                if (self.count%3 ==0):
-                    conn = connect()
-                    if conn:
+                conn = connect()
+                if conn:
                         player = get_player_by_id(conn, player_id)
                         #print(player)                        
                         if player:  
@@ -607,10 +606,8 @@ class PlayerEntryScreen(QWidget):
                 return
         elif (equip_id=="" and code_name!="" and player_id!=""):
                 print('4')
-                if (self.count%3 ==0):
-                    if (equip_id=="" and code_name!="" and player_id!=""):
-                        conn = connect()
-                        if conn:
+                conn = connect()
+                if conn:
                             player = get_player_by_id(conn, player_id)
                             #print("get player ID")
                             
