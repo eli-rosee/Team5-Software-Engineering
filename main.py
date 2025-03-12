@@ -22,13 +22,10 @@ class CountdownHandler(QObject):
     @pyqtSlot() 
     def open_countdown_window(self):
         global countdown_window
-        print("DEBUG: open_countdown_window() was called!")
 
         if countdown_window is None or not countdown_window.isVisible():
-            print("DEBUG: Creating new countdown window...")
             countdown_window = countdown.CountdownWindow()
             countdown_window.showMaximized()
-            print("DEBUG: Countdown window should now be visible")
         else:
             print("DEBUG: Countdown window is already open.")
 
@@ -36,22 +33,18 @@ class PlayActionHandler(QObject):
     @pyqtSlot() 
     def open_play_action(self):
         global play_action_screen_window  
-        
-        print("DEBUG: open_play_action() was called!")
 
         if play_action_screen_window is None or not play_action_screen_window.isVisible():
-            print("DEBUG: Creating new PlayActionScreen...")
             from player_entry_screen import PlayerEntryScreen 
             red_players, green_players = player_entry_screen_window.get_player_data()
             play_action_screen_window = play_action_screen.PlayActionScreen(
                 red_players=red_players,
                 green_players=green_players,
                 photon_network=player_entry_screen_window.photon_network,  
-                player_entry_screen_instance=player_entry_screen_window  # ✅ Pass the instance, not class!
+                player_entry_screen_instance=player_entry_screen_window  
             )   
             play_action_screen_window.showMaximized()
 
-            print("DEBUG: PlayActionScreen should now be visible.")
         else:
             print("DEBUG: PlayActionScreen is already open.")
 
@@ -63,9 +56,9 @@ def on_key_event(key):
 
     try:
         if key == keyboard.Key.f3:
-            print("Start game")
+            print("Nothing")
         elif key == keyboard.Key.f1:
-            print("Back to loading screen")
+            print("Nothing")
         elif key == keyboard.Key.tab:
             if main_window is not None:
                 QTimer.singleShot(0, main_window.change_tab_ind)
@@ -80,7 +73,6 @@ def on_key_event(key):
                 print("Splash window is already closed or not initialized.")
             
             if player_entry_screen_window is not None and player_entry_screen_window.isVisible():
-                print("Closing Player Entry Screen...")
                 QMetaObject.invokeMethod(player_entry_screen_window, "close", Qt.ConnectionType.QueuedConnection)
             else:
                 print("Splash window is already closed or not initialized.")
@@ -95,7 +87,6 @@ def on_key_event(key):
             QMetaObject.invokeMethod(QApplication.instance(), "quit", Qt.ConnectionType.QueuedConnection)
         elif key == keyboard.Key.enter:
             main_window = player_entry_screen_window
-            print(main_window)
             if main_window is not None:
                 QTimer.singleShot(0, main_window.add_player_by_key)
             else:
@@ -113,7 +104,6 @@ def start_server_in_thread():
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-     # Start keyboard listener
     countdown_handler = CountdownHandler()
     play_action_handler = PlayActionHandler()
     listener = keyboard.Listener(on_press=on_key_event)
@@ -122,7 +112,6 @@ if __name__ == "__main__":
     server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
     server_thread.start()
 
-    print("Starting Splash Screen...")
 
     try:
         splash_window = splash.MainWindow()
@@ -135,9 +124,6 @@ if __name__ == "__main__":
 
     def transition_to_player_entry():
         global main_window, player_entry_screen_window
-
-        print("Transitioning to Player Entry Screen...")
-
         transition_timer.stop()
         
         if splash_window:
@@ -152,11 +138,11 @@ if __name__ == "__main__":
             )
         except Exception as e:
             print(f"Error initializing Player Entry Screen: {e}")
-            sys.exit(1)  # Exit if main window fails
+            sys.exit(1)  
 
 
     transition_timer.timeout.connect(transition_to_player_entry)
-    transition_timer.start(3000)  # 15 seconds
+    transition_timer.start(3000)  
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
