@@ -2,11 +2,14 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLay
 from PyQt6.QtCore import Qt, QTimer,QMetaObject,QEvent
 from functools import partial
 import sys
+import time
 from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
 from client import PhotonNetwork  
 from play_action_screen import PlayActionScreen 
+from countdown import CountdownWindow
+
 from PyQt6.QtCore import QThread, pyqtSignal
 
 class sortPlayers(QThread):
@@ -28,7 +31,6 @@ class ChangeTabInd(QThread):
         self.parent = parent
 
     def run(self):
-        """Runs the change_tab_ind function in a separate thread."""
         self.parent.change_tab_ind()
         self.finished.emit() 
 
@@ -36,8 +38,7 @@ class PlayerEntryScreen(QWidget):
     photon_network_instance = None
 
     def create_photon_network(self):
-        """Create a new PhotonNetwork instance only if needed."""
-        from client import PhotonNetwork  # Import inside function to avoid circular import
+        from client import PhotonNetwork 
         
         if PlayerEntryScreen.photon_network_instance is None:
             PlayerEntryScreen.photon_network_instance = PhotonNetwork(server_ip="127.0.0.1", server_port=7500, client_port=7501)
@@ -49,7 +50,6 @@ class PlayerEntryScreen(QWidget):
         self.change_tab_thread = ChangeTabInd(self) 
         self.setWindowTitle("Player Entry Screen")
         self.setGeometry(100, 100, 800, 600)
-        #self.showFullScreen()
         self.setStyleSheet("background-color: black;")
         self.tab_ind = 0
         self.popup_active = False 
@@ -95,8 +95,8 @@ class PlayerEntryScreen(QWidget):
 
         self.red_team_info_layout = QHBoxLayout()
 
-        self.add_label = QLabel("ADD")
-        self.add_label.setFixedWidth(78)
+        self.add_label = QLabel("")
+        self.add_label.setFixedWidth(37)
         self.add_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.add_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: darkred;")
         self.add_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -122,7 +122,6 @@ class PlayerEntryScreen(QWidget):
 
 
         self.red_team_layout.addLayout(self.red_team_info_layout)
-
         
         self.red_team_list = QGridLayout()
         self.red_row = []
@@ -137,13 +136,7 @@ class PlayerEntryScreen(QWidget):
             input_field3.setStyleSheet("background-color: white; color: black;")
             input_field2.setReadOnly(True)
             input_field3.setReadOnly(True)
-            """
-            if (i != 0):
-                input_field1.setReadOnly(True)
-                input_field2.setReadOnly(True)
-                
-            input_field1.setReadOnly(True)
-            """
+
             arrow_label = QLabel(">>")  
             arrow_label.setStyleSheet("font-weight: bold; color: black;")
             checkbox = QCheckBox()
@@ -157,17 +150,13 @@ class PlayerEntryScreen(QWidget):
             self.red_team_list.addWidget(input_field1, i, 3)
             self.red_team_list.addWidget(input_field2, i, 4)
             self.red_team_list.addWidget(input_field3, i, 5)
-            #input_field2.textChanged.connect(self.check_inputs)
-            # Connect stateChanged with partial to pass the checkbox itself
+    
             field=input_field1
             field2=input_field2 
             field3=input_field3
             player_num=i
             team="Red"
             self.on_checkbox_toggled(checkbox, field, field2, field3, player_num, team, Qt.CheckState.Checked)
-
-            #checkbox.stateChanged.connect(lambda state, field=input_field1, field2=input_field2, player_num=i, team="Red": self.on_checkbox_toggled(state, field, field2, player_num, team))
-
         
         self.red_team_layout.addLayout(self.red_team_list)
         teams_layout.addLayout(self.red_team_layout)
@@ -181,10 +170,10 @@ class PlayerEntryScreen(QWidget):
 
         self.green_team_info_layout = QHBoxLayout()
 
-        self.player_id_label = QLabel("ADD")
+        self.player_id_label = QLabel("")
         self.player_id_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.player_id_label.setStyleSheet("font-size: 14px; font-weight: bold; color: white; background-color: Green;")
-        self.player_id_label.setFixedWidth(78)
+        self.player_id_label.setFixedWidth(37)
         self.green_team_info_layout.addWidget(self.player_id_label,0)
 
         self.player_id_label = QLabel("PLAYER ID")
@@ -217,13 +206,6 @@ class PlayerEntryScreen(QWidget):
             input_field3.setStyleSheet("background-color: white; color: black;")
             input_field2.setReadOnly(True)
             input_field3.setReadOnly(True)
-            """
-            if (i != 0):
-                input_field1.setReadOnly(True)
-                input_field2.setReadOnly(True)
-                
-            input_field1.setReadOnly(True)
-            """
             arrow_label = QLabel(">>")  
             arrow_label.setStyleSheet("font-weight: bold; color: black;")
             checkbox = QCheckBox()
@@ -236,14 +218,13 @@ class PlayerEntryScreen(QWidget):
             self.green_team_list.addWidget(input_field1, i, 3)
             self.green_team_list.addWidget(input_field2, i, 4)
             self.green_team_list.addWidget(input_field3, i, 5)
-            #input_field2.textChanged.connect(self.check_inputs)
+
             field=input_field1
             field2=input_field2 
             fiedl3=input_field3
             player_num=i
             team="Green"
             self.on_checkbox_toggled(checkbox, field, field2, field3, player_num, team, Qt.CheckState.Checked)
-            #checkbox.stateChanged.connect(lambda state, field=input_field1, field2=input_field2, player_num=i, team="Green": self.on_checkbox_toggled(state, field, field2, player_num, team))
 
 
         self.green_team_layout.addLayout(self.green_team_list)
@@ -279,7 +260,6 @@ class PlayerEntryScreen(QWidget):
 
     #player action screen
     def get_player_data(self):
-        """Collect player data from Red and Green teams."""
         red_players = []
         green_players = []
 
@@ -287,20 +267,19 @@ class PlayerEntryScreen(QWidget):
             player_id = row[3].text().strip()
             code_name = row[4].text().strip()
             equip_id = row[5].text().strip()
-            if player_id and code_name and equip_id:  # Only include players with valid data
+            if player_id and code_name and equip_id: 
                 red_players.append((player_id, code_name, equip_id))
 
         for row in self.green_row:
             player_id = row[3].text().strip()
             code_name = row[4].text().strip()
             equip_id = row[5].text().strip()
-            if player_id and code_name and equip_id:  # Only include players with valid data
+            if player_id and code_name and equip_id: 
                 green_players.append((player_id, code_name, equip_id))
 
         return red_players, green_players
     
     def add_player_by_key(self):
-        print(self.tab_ind)
         for row_index, row in enumerate(self.red_row): 
                      row[1].setStyleSheet("color: black;")
         for row_index, row in enumerate(self.green_row):  
@@ -329,18 +308,14 @@ class PlayerEntryScreen(QWidget):
         )
 
         checkbox.setCheckState(Qt.CheckState.Checked) 
-        #print("test3", main_window.tab_ind)
-        #print("test",self.red_row[main_window.tab_ind][5].text())
         self.red_row[int((self.tab_ind)/2)][1].setStyleSheet("color: black;")
         self.green_row[int((self.tab_ind-1)/2)][1].setStyleSheet("color: black;")
         QApplication.processEvents()
 
-        # Send player data to the server
         if (equip_id.text() != ""):
             self.photon_network.equipID(equip_id.text())
                 
     def change_tab_ind(self):
-                print("test_tab")
                 self.tab_ind +=1
                 if (self.tab_ind == 38):
                     self.tab_ind = 0
@@ -354,7 +329,6 @@ class PlayerEntryScreen(QWidget):
                         else: 
                              target_input = self.red_row[(self.tab_ind) // 2][5]
 
-                        #print(target_input)
                         QMetaObject.invokeMethod(target_input, "setFocus", Qt.ConnectionType.QueuedConnection)
                         for row_index, row in enumerate(self.red_row): 
                             row[1].setStyleSheet("color: black;")
@@ -369,7 +343,6 @@ class PlayerEntryScreen(QWidget):
                              target_input = self.green_row[(self.tab_ind) // 2][4]
                         else: 
                              target_input = self.green_row[(self.tab_ind) // 2][5]
-                        #print(target_input)
                         
                         QMetaObject.invokeMethod(target_input, "setFocus", Qt.ConnectionType.QueuedConnection)
                         for row_index, row in enumerate(self.red_row): 
@@ -408,7 +381,6 @@ class PlayerEntryScreen(QWidget):
                 if self.tab_ind % 2 == 0:
 
                     if (self.tab_ind // 2) < len(self.red_row):
-                        #self.red_row[main_window.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
                         self.red_row[self.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
                     
                     if ((self.tab_ind - 1) // 2) < len(self.green_row):
@@ -417,7 +389,6 @@ class PlayerEntryScreen(QWidget):
                 elif self.tab_ind % 2 == 1:
 
                     if ((self.tab_ind - 1) // 2) < len(self.green_row):
-                        #self.green_row[(main_window.tab_ind - 1) // 2][1].setStyleSheet("font-weight: bold; color: white;")
                         self.green_row[self.tab_ind // 2][1].setStyleSheet("font-weight: bold; color: white;")
                     
                     if (self.tab_ind // 2) < len(self.red_row):
@@ -430,7 +401,6 @@ class PlayerEntryScreen(QWidget):
                         self.green_row[index // 2][1].setStyleSheet("font-weight: bold; color: black;")
 
     def sort_players(self):
-            print("sort")
             for i in range(len(self.red_row) - 1):
                 checkbox, arrow_label, num_label, player_id_field, code_name_field,equip_id = self.red_row[i]
 
@@ -439,7 +409,6 @@ class PlayerEntryScreen(QWidget):
                         next_checkbox, next_arrow, next_num, next_player_id, next_code_name, next_eqip_id = self.red_row[j]
 
                         if next_player_id.text().strip() != "" or next_code_name.text().strip() != "" or next_eqip_id.text().strip() != "":
-                            #QTimer.singleShot(0, self.change_tab_ind) 
                             self.change_tab_thread.start()
                             player_id_field.setText(next_player_id.text())
                             player_id_field.setReadOnly(True)
@@ -470,7 +439,6 @@ class PlayerEntryScreen(QWidget):
                         next_checkbox, next_arrow, next_num, next_player_id, next_code_name, next_eqip_id = self.green_row[j]
 
                         if next_player_id.text().strip() != "" or next_code_name.text().strip() != "" or next_eqip_id.text().strip() != "":
-                            #QTimer.singleShot(0, self.change_tab_ind) 
                             self.change_tab_thread.start()
                             player_id_field.setText(next_player_id.text())
                             player_id_field.setReadOnly(True)
@@ -495,19 +463,15 @@ class PlayerEntryScreen(QWidget):
                             break 
 
     def on_checkbox_toggled(self, checkbox, field, field2, field3, player_num, team, state):
-        #database check here
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
-        print(player_id, code_name, equip_id)
         
         DB_NAME = "photon"
         DB_HOST = "127.0.0.1"
-        DB_PORT = "5432"  # PostgreSQL default port
+        DB_PORT = "5432"  
 
         def connect():
-            """Establish a connection to the PostgreSQL database."""
-            print("Attempting to connect to PostgreSQL...")
             try:
                 conn = psycopg2.connect(
                     dbname=DB_NAME,
@@ -523,28 +487,24 @@ class PlayerEntryScreen(QWidget):
                 return None
 
         def get_player_by_id(conn, player_id):
-            """Check if a player exists in the database by player ID using an existing connection."""
             if conn:
                 cursor = conn.cursor()
                 player_id = int(player_id)
                 cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id,))
                 result = cursor.fetchone()
                 cursor.close()
-                return result[0] if result else None  # Return codename if found, otherwise None
+                return result[0] if result else None  
             return None
 
         def add_new_player(conn, player_id, codename):
-            """Insert a new player into the database using an existing connection."""
             if conn:
                 cursor = conn.cursor()
                 cursor.execute("INSERT INTO players (id, codename) VALUES (%s, %s);", (player_id, codename))
                 conn.commit()
                 cursor.close()
-                print(f"Player '{codename}' (ID: {player_id}) added successfully!")
 
 
         def get_all_players():
-            """Retrieve all players from the database."""
             conn = connect()
             if conn:
                 cursor = conn.cursor()
@@ -559,24 +519,19 @@ class PlayerEntryScreen(QWidget):
         text = self.directions.text()
         number = text.replace("Enter ", "").replace("'s CODE NAME:", "")
        
-        print(player_id, code_name, equip_id)
         if "CODE NAME:" in self.directions.text() and field.text() != number:
-                print('1')
                 field.setText("")
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
                 return
         elif player_id == "":
-                print('2')
                 self.directions.setText("Player Does not have an ID")
                 checkbox.setCheckState(Qt.CheckState.Unchecked)
                 return
 
         elif code_name == "" and player_id!="":
-                print('3')
                 conn = connect()
                 if conn:
                         player = get_player_by_id(conn, player_id)
-                        #print(player)                        
                         if player:  
                             field2.setText(player)
                             field2.setReadOnly(True)
@@ -605,19 +560,15 @@ class PlayerEntryScreen(QWidget):
                 self.count +=1
                 return
         elif (equip_id=="" and code_name!="" and player_id!=""):
-                print('4')
                 conn = connect()
                 if conn:
-                            player = get_player_by_id(conn, player_id)
-                            #print("get player ID")
-                            
-                            if player:  
-                                field2.setText(player)
-                            else: 
-                                add_new_player(conn, player_id, code_name)
+                    player = get_player_by_id(conn, player_id)                            
+                    if player:  
+                        field2.setText(player)
+                    else: 
+                        add_new_player(conn, player_id, code_name)
 
-                            conn.close()  
-                    
+                conn.close()  
 
                 field2.setReadOnly(True)
                 self.directions.setText(f"Enter {player_id} equipment ID") 
@@ -627,24 +578,15 @@ class PlayerEntryScreen(QWidget):
                 self.count +=1
                 return
         else:
-            print('5')
-            print(self)
             if hasattr(self, "worker") and self.worker.isRunning():
-                print("Previous sorting still running. Skipping new sort.")
                 return
 
-    # Create and start the worker thread
-            self.worker = sortPlayers(self)  # Pass PlayerEntryScreen instance
+            self.worker = sortPlayers(self)
             self.worker.start()
             
-            
             field2.setReadOnly(True)
-            print('6')
-
             field3.setReadOnly(True)
-            #QTimer.singleShot(0, self.change_tab_ind) 
             self.change_tab_thread.start()
-
             self.popup_active = False
   
 
@@ -686,23 +628,17 @@ class PlayerEntryScreen(QWidget):
 
     def tab_to_target_red(self, target_index, extra_steps=0):
         if self.tab_ind != target_index or extra_steps > 0:
-            #self.change_tab_ind()  
             self.change_tab_thread.start()
-
             if extra_steps > 0:
                 extra_steps -= 1  
-            
             QTimer.singleShot(0, lambda: self.tab_to_target_red(target_index, extra_steps))  
 
 
     def tab_to_target_green(self, target_index, extra_steps=0):
         if self.tab_ind != target_index or extra_steps > 0:
-            #self.change_tab_ind()  
             self.change_tab_thread.start()
-
             if extra_steps > 0:
                 extra_steps -= 1  
-            
             QTimer.singleShot(0, lambda: self.tab_to_target_green(target_index, extra_steps)) 
 
     def install_button_event_listeners(self):
@@ -711,8 +647,6 @@ class PlayerEntryScreen(QWidget):
 
     def clear_all_players(self):
         for checkbox, arrow_label, num_label, player_id_field, code_name_field, equip_id in self.red_row + self.green_row:
-            #checkbox.setChecked(False)
-            #print(self.red_row)
             player_id_field.clear()
             player_id_field.setReadOnly(False)
             code_name_field.clear()
@@ -720,20 +654,29 @@ class PlayerEntryScreen(QWidget):
 
 
         QApplication.processEvents()
-        print("All player entries cleared.")
 
     def open_play_action_screen(self):
-        """Opens PlayActionScreen while keeping PlayerEntryScreen hidden."""
         red_players, green_players = self.get_player_data()
         self.play_action_screen = PlayActionScreen(red_players, green_players, self.photon_network, self)
         self.hide()
         self.play_action_screen.showMaximized()
 
+    def finish_countdown(self):
+        self.countdown_screen.hide()
+        red_players, green_players = self.get_player_data()
+
+        self.play_action_screen = PlayActionScreen(
+            red_players, 
+            green_players, 
+            self.photon_network,  
+            player_entry_screen_instance=self  
+        )
+        self.play_action_screen.showMaximized()
+
     def on_button_clicked(self, index, button):
         self.directions.setText(f"Button {index} clicked: {button.text()}")
 
-        if index == 30:  # F1 Edit Game
-            print("Editing Game...")
+        if index == 30:  #F1
             for row_index, row in enumerate(self.red_row): 
                      row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -742,8 +685,7 @@ class PlayerEntryScreen(QWidget):
             QApplication.processEvents()
             self.tab_ind = 30 
             QTimer.singleShot(0, lambda: self.tab_to_target_red(30, 0))    
-        elif index == 31:  # F2 Game Parameters
-            print("Adjusting Game Parameters...")
+        elif index == 31:  # F2 
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -751,8 +693,7 @@ class PlayerEntryScreen(QWidget):
             self.tab_ind = 31
             QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(31, 0)) 
-        elif index == 32:  # F3 Start Game
-            print("Starting Game...")
+        elif index == 32:  # F3
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -760,24 +701,17 @@ class PlayerEntryScreen(QWidget):
             self.tab_ind = 32
             QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
-        elif index == 33:  # F5 PreEntered Games
-            print("Viewing PreEntered Games...")
-            # Collect player data from Red and Green teams
+        elif index == 33:  # F5
             red_players, green_players = self.get_player_data()
-            
-            # Create PlayActionScreen as a top-level window
-            self.play_action_screen = PlayActionScreen(red_players, green_players, self.photon_network)
-            self.play_action_screen.show()  # Show the PlayActionScreen as a new window
-            
-            for row_index, row in enumerate(self.red_row): 
-                    row[1].setStyleSheet("color: black;")
-            for row_index, row in enumerate(self.green_row):  
-                    row[1].setStyleSheet("color: black;")
+            self.hide()
+            self.countdown_screen = CountdownWindow(self)
+            self.countdown_screen.showFullScreen()
+            QTimer.singleShot(30000, self.finish_countdown)
+
             self.tab_ind = 33
             QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
         elif index == 34:  # F7
-            print("F7 Action Triggered")
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -785,8 +719,7 @@ class PlayerEntryScreen(QWidget):
             self.tab_ind = 34
             QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(34, 0))            
-        elif index == 35:  # F8 View Game
-            print("Viewing Game...")
+        elif index == 35:  # F8
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -794,8 +727,7 @@ class PlayerEntryScreen(QWidget):
             self.tab_ind = 35
             QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(35, 0))           
-        elif index == 36:  # F10 Flick Sync
-            print("Performing Flick Sync...")
+        elif index == 36:  # F10
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -803,8 +735,7 @@ class PlayerEntryScreen(QWidget):
             QTimer.singleShot(0, lambda: self.tab_to_target_red(36, 0))
             self.tab_ind = 36   
             QApplication.processEvents()           
-        elif index == 37:  # F12 Clear Game
-            print("Clearing Game...")
+        elif index == 37:  # F12
             self.clear_all_players()   
 
 if __name__ == "__main__":
