@@ -231,13 +231,13 @@ class PlayerEntryScreen(QWidget):
         self.button_layout = QHBoxLayout()
         self.buttons = {}
         button_labels = {
-                    30: "F1 Edit Game",
-                    31: "F2 Game Parameters",
-                    32: "F3 Start Game",
-                    33: "F5 PreEntered Games",
+                    30: "F1",
+                    31: "F2",
+                    32: "F3",
+                    33: "F5 Start Game",
                     34: "F7",
-                    35: "F8 View Game",
-                    36: "F10 Flick Sync",
+                    35: "F8",
+                    36: "F10",
                     37: "F12 Clear Game"
                 }        
         for index, label in button_labels.items():
