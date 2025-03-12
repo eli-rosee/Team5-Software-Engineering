@@ -580,7 +580,14 @@ class PlayerEntryScreen(QWidget):
                         #print(player)                        
                         if player:  
                             field2.setText(player)
+                            field2.setReadOnly(True)
+                            self.directions.setText(f"Enter {player_id} equipment ID") 
+                            QMetaObject.invokeMethod(field3, "setFocus", Qt.ConnectionType.QueuedConnection)
+                            field3.setReadOnly(False)
+                            checkbox.setCheckState(Qt.CheckState.Unchecked)
+                            self.count +=1
                             QApplication.processEvents()
+
                             QMetaObject.invokeMethod(field3, "setFocus", Qt.ConnectionType.QueuedConnection)
                             QApplication.processEvents()
                             return
