@@ -26,7 +26,6 @@ class CountdownWindow(QMainWindow):
 
     def force_close(self):
         """Closes the countdown window and exits the application."""
-        print("DEBUG: Closing Countdown Window...")
         self.close()
 
     def show_logo(self):
