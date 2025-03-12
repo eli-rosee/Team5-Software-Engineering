@@ -59,7 +59,6 @@ class PlayerEntryScreen(QWidget):
         
         if photon_network is None:
             if PlayerEntryScreen.photon_network_instance is None:
-                print("DEBUG: Creating new PhotonNetwork instance")
                 PlayerEntryScreen.photon_network_instance = self.create_photon_network()
             else:
                 print("DEBUG: Reusing existing PhotonNetwork instance")
