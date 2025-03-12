@@ -69,13 +69,6 @@ class CountdownWindow(QMainWindow):
 
     def update_image(self):
         """Loads and displays the appropriate countdown image, with alert effect in the last 3 seconds."""
-        if self.countdown_time <= 3:  
-            alert_path = "graphics/alert-on.tif"
-            if os.path.exists(alert_path):
-                self.background_label.setPixmap(QPixmap(alert_path))
-            else:
-                print("Warning: Alert image not found.")
-
         image_path = f"graphics/countdown_images/{self.countdown_time}.tif"
         if os.path.exists(image_path):
             self.countdown_label.setPixmap(QPixmap(image_path))
