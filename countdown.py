@@ -78,11 +78,6 @@ class CountdownWindow(QMainWindow):
     def show_final_image(self):
         """Displays the final 'countdown_0.tif' before transitioning."""
         final_image_path = "graphics/countdown_images/countdown_0.tif"
-        if os.path.exists(final_image_path):
-            self.countdown_label.setPixmap(QPixmap(final_image_path))
-        else:
-            print("Warning: Final countdown image not found.")
-
         QTimer.singleShot(1000, self.force_close)
 
     def resizeEvent(self, event):
