@@ -310,7 +310,7 @@ class PlayerEntryScreen(QWidget):
         if (equip_id.text() != ""):
             try:
                 equip_id_value = int(equip_id.text().strip()) 
-                self.photon_network.equipID(equip_id_value)
+                self.photon_network.equipID(equip_id.text())
             except ValueError: 
                 print("Error: equip_id contains non-numeric text")
                 
