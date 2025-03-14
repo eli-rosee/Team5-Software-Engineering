@@ -5,6 +5,7 @@ import sys
 import signal
 from pynput import keyboard
 import psycopg2
+import socket
 from psycopg2 import sql
 from client import PhotonNetwork  # Import the PhotonNetwork class
 from play_action_screen import PlayActionScreen #import player action screen
@@ -240,7 +241,7 @@ class PlayerEntryScreen(QWidget):
                     31: "F2 Game Parameters",
                     32: "F3 Start Game",
                     33: "F5 PreEntered Games",
-                    34: "F7",
+                    34: "Change IP",
                     35: "F8 View Game",
                     36: "F10 Flick Sync",
                     37: "F12 Clear Game"
@@ -756,7 +757,8 @@ class PlayerEntryScreen(QWidget):
             QApplication.processEvents()
             QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
         elif index == 34:  # F7
-            print("F7 Action Triggered")
+            print("Change IP")
+            self.show_ip_input_dialog()
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -784,7 +786,68 @@ class PlayerEntryScreen(QWidget):
             QApplication.processEvents()           
         elif index == 37:  # F12 Clear Game
             print("Clearing Game...")
-            self.clear_all_players()   
+            self.clear_all_players()
+
+    def is_valid_ip(self, ip):
+        """Check if the given string is a valid IPv4 address."""
+        try:
+            socket.inet_aton(ip)
+            return True
+        except socket.error:
+            return False
+
+    
+    def show_ip_input_dialog(self):
+        """ Show a popup dialog for entering a new server IP. """
+        popup = QDialog(self)
+        popup.setWindowTitle("Change Server IP")
+        popup.setModal(True)
+        popup.setStyleSheet("background-color: black; color: white;")
+        popup.resize(300, 150)
+
+        layout = QVBoxLayout()
+
+        label = QLabel("Enter new server IP:")
+        layout.addWidget(label)
+
+        ip_input = QLineEdit()
+        ip_input.setPlaceholderText("e.g., 192.168.1.10")
+        layout.addWidget(ip_input)
+
+        button_layout = QHBoxLayout()
+        confirm_button = QPushButton("Confirm")
+        confirm_button.clicked.connect(lambda: self.update_server_ip(popup, ip_input.text()))
+        button_layout.addWidget(confirm_button)
+
+        layout.addLayout(button_layout)
+        popup.setLayout(layout)
+        popup.exec()
+
+    def update_server_ip(self, popup, new_ip):
+        new_ip = ".".join(["0"] * (3 - new_ip.count(".")) + new_ip.split("."))
+        if not self.is_valid_ip(new_ip.strip()):
+            print("Invalid IP address entered.")
+            error_popup = QDialog(self)
+            error_popup.setWindowTitle("Error")
+            error_popup.setModal(True)
+            error_popup.setStyleSheet("background-color: black; color: white;")
+            error_popup.resize(250, 100)
+
+            layout = QVBoxLayout()
+            error_label = QLabel("Invalid IP Address. Try again.")
+            layout.addWidget(error_label)
+
+            close_button = QPushButton("OK")
+            close_button.clicked.connect(error_popup.close)
+            layout.addWidget(close_button)
+
+            error_popup.setLayout(layout)
+            error_popup.exec()
+            return  # Stop execution if IP is invalid
+
+        popup.close()  # Close the input popup if valid
+        self.photon_network.server_ip = new_ip.strip()
+        print(f"Server IP changed to: {new_ip}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
