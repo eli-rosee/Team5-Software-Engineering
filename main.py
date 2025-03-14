@@ -65,7 +65,7 @@ def on_key_event(key):
 def start_server_in_thread():
     """ Function to start the server in a separate thread """
     try:
-        server.start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501)
+        server.start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501)
     except Exception as e:
         print(f"Error starting server: {e}")
 
