@@ -10,7 +10,6 @@ from PyQt6.QtCore import QTimer, QMetaObject, Qt, QObject, pyqtSlot
 from pynput import keyboard
 import threading
 import server 
-import os
 
 main_window = None
 countdown_window = None
@@ -18,7 +17,6 @@ splash_window = None
 player_entry_screen_window = None  
 play_action_screen_window = None
 global play_action_handler
-server_thread = None
 
 class CountdownHandler(QObject):
     @pyqtSlot() 
@@ -115,46 +113,12 @@ def on_key_event(key):
     except AttributeError as e:
         print(f"Error: Key press event encountered an issue: {e}")
 
-def start_server_in_thread(server_ip="127.0.0.1"):
-    """ Start the server in a separate thread with a given IP. """
-    global server_thread, server_running
-
-    stop_server()
-
-    def run_server():
-        global server_running
-        try:
-            
-            time.sleep(1)  
-            server_running = True
-            server.start_server(server_ip=server_ip, server_port=7500, client_port=7501)
-        except OSError as e:
-            if e.errno == 98: 
-                print("⚠️ Error: Address already in use. Retrying in 2 seconds...")
-                time.sleep(2)
-                run_server() 
-            else:
-                print(f"Error starting server: {e}")
-
-
-def stop_server():
-    """Stop the currently running server thread."""
-    global server_running, server_thread
-
-    if server_thread and server_thread.is_alive():
-        server_running = False 
-
-        try:
-            import psutil  
-            for conn in psutil.net_connections(kind='inet'):
-                if conn.laddr.port == 7500:
-                    os.kill(conn.pid, signal.SIGTERM)  
-                    print(f"🔴 Killed process using port 7500: PID {conn.pid}")
-        except Exception as e:
-            print(f"Warning: Could not check for existing connections - {e}")
-
-        server_thread.join(timeout=2)  
-        server_thread = None
+def start_server_in_thread():
+    """ Function to start the server in a separate thread """
+    try:
+        server.start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501)
+    except Exception as e:
+        print(f"Error starting server: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -163,7 +127,8 @@ if __name__ == "__main__":
     listener = keyboard.Listener(on_press=on_key_event)
     listener.start()
 
-    start_server_in_thread()
+    server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
+    server_thread.start()
 
 
     try:
