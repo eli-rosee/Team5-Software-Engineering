@@ -793,7 +793,7 @@ class PlayerEntryScreen(QWidget):
 
             self.photon_network = PlayerEntryScreen.photon_network_instance 
             print(f"✅ Successfully changed server IP to {new_ip}")
-            #self.photon_network.update_ip()
+            self.photon_network.update_ip()
 
          except socket.error as e:
             print(f"❌ Error binding to new IP {new_ip}: {e}")
