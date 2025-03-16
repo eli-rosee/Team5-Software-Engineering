@@ -10,6 +10,7 @@ class PhotonNetwork:
         self.server_ip = server_ip  
         self.server_port = server_port
         self.client_ip = client_ip
+        self.client_port = client_port
         
         self.serverAddressPort = (server_ip, server_port)
         self.clientAddressPort = (client_ip, client_port)
