@@ -31,6 +31,7 @@
      - python3 main.py 
 
   5. What happens in main.py?
+     - In the terminal, you can see what is coming through the server's receiving port
      - First 3 seconds is the loading screen
      - After that, the player entry screen loads
      - In the player entry screen, you can insert the player_id into a player id textbox
@@ -41,4 +42,10 @@
      - Lastly, you must insert and confirm the equipment id 
      - Pressing enter, will then add the player completely (sends information to the server)
      - If you want to to move sides or to a specific textbox, you can either press tab or click the text box with your cursor
-     - After you have enteted all players, 
+     - After you have enteted all players that you want, you can click f5 or the button labeled "f5 Start Game" to start the game
+     - You can only enter the game if all players have a equipment id linked to their player and there must be at least one player on eash side
+     - After starting the game, a 30 second timer will start
+     - Once that timer is done, it will start the game and up the play action screen
+     - To return to the player entry screen, click the "Return to Player Entry Screen" button
+     - Clicking the button "Change IP" allows you to change the IP address
+     - pressing f12 or clicking the f12 button allows you to clear out all the players entered
