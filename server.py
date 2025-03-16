@@ -17,18 +17,16 @@ def start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501):
         # Receive data from the client
         data, client_address = server_socket.recvfrom(buffer_size)
         message = data.decode('utf-8')
-        print(f"Received from client: {message}")
 
         if message == "202":
             # Start signal, no need to handle equip ID
             response = "202"
         else:
             # Assume the message is an equipment ID
-            response = f"ACK:{message}"
+            response = f"{message}"
 
         # Send the response back to the client
         server_socket.sendto(response.encode('utf-8'), (client_address[0], client_port))
-        print(f"Sent response to client: {response}")
 
 # Example usage
 if __name__ == "__main__":
