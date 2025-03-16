@@ -28,13 +28,16 @@ def start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501):
         # Send the response back to the client
         server_socket.sendto(response.encode('utf-8'), (client_address[0], client_port))
 
-def update_ip(self, new_ip):
-        """Updates the server IP and restarts the socket."""
-        self.running = False  # Stop the old loop
+def stop_server(self):
+        """Stop the server properly."""
+        self.running = False
         if self.server_socket:
             self.server_socket.close()
+
+def update_ip(self, new_ip):
+        """Change the server's IP and restart the server."""
+        self.stop_server()
         self.server_ip = new_ip.strip()
-        self.running = True  # Restart the loop
         print(f"Server IP changed to: {self.server_ip}")
         threading.Thread(target=self.start_server, daemon=True).start()
 
