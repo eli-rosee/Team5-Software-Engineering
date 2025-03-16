@@ -28,7 +28,7 @@ class PhotonNetwork:
         """Send the start signal ("202") to the game software."""
         message = "202".encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print("202")
+        
 
     def equipID(self, equip_id):
         """Send the equipment ID to the server."""
