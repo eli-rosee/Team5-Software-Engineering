@@ -13,8 +13,6 @@ class Server:
         """Start the UDP server."""
         buffer_size = 1024
 
-        server_ip = "127.0.0.1"
-
         # Create a UDP socket
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         server_socket.bind((server_ip, server_port))
