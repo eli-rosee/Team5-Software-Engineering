@@ -18,6 +18,7 @@ class Server:
 
         self.running = True
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.server_socket = socket.socket(socket.AF_INET, self.client_port)
 
         try:
             self.server_socket.bind((self.server_ip, self.server_port))
