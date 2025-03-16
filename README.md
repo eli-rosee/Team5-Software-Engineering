@@ -26,6 +26,8 @@
      - sudo pip3 install pynput==1.7.6
      - pip install psycopg2-binary
      - sudo apt install libxcb-cursor0
+     - sudo apt update
+     - sudo apt install tcpdump -y
     
   4. Running the application (must be inside project folder)
      - python3 main.py 
@@ -49,3 +51,9 @@
      - To return to the player entry screen, click the "Return to Player Entry Screen" button
      - Clicking the button "Change IP" allows you to change the IP address
      - pressing f12 or clicking the f12 button allows you to clear out all the players entered
+   
+  6. To verify that the udp set up is correct, run these commands
+     - sudo tcpdump -i lo -n udp port 7500 -X
+     - sudo tcpdump -i lo -n udp port 7501 -X
+
+
