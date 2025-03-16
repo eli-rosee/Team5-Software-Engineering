@@ -67,19 +67,23 @@ def on_key_event(key):
         elif key == keyboard.Key.f12:
                 QTimer.singleShot(0, main_window.clear_all_players)
         elif key == keyboard.Key.f5:
-            if splash_window:
-                splash_window.close()
+            red_players, green_players = player_entry_screen_window.get_player_data()
+            if not red_players or not green_players:
+                player_entry_screen_window.directions.setText("There is an empty team")
             else:
-                print("Splash window is already closed or not initialized.")
-            
-            if player_entry_screen_window is not None and player_entry_screen_window.isVisible():
-                QMetaObject.invokeMethod(player_entry_screen_window, "close", Qt.ConnectionType.QueuedConnection)
-            else:
-                print("Splash window is already closed or not initialized.")
+                if splash_window:
+                    splash_window.close()
+                else:
+                    print("Splash window is already closed or not initialized.")
+                
+                if player_entry_screen_window is not None and player_entry_screen_window.isVisible():
+                    QMetaObject.invokeMethod(player_entry_screen_window, "close", Qt.ConnectionType.QueuedConnection)
+                else:
+                    print("Splash window is already closed or not initialized.")
 
-            QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
-            time.sleep(30)
-            QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
+                QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
+                time.sleep(30)
+                QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
 
         elif key == keyboard.Key.esc:
             if main_window and hasattr(main_window, 'timer'):
