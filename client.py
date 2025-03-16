@@ -28,7 +28,7 @@ class PhotonNetwork:
         """Send the start signal ("202") to the game software."""
         message = "202".encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        
+        #print("202")
 
     def equipID(self, equip_id):
         """Send the equipment ID to the server."""
@@ -54,6 +54,24 @@ class PhotonNetwork:
         self.broadcast_socket.close()
         self.receive_socket.close()
         print("Photon network connections closed.")
+
+    def update_ip(self, new_ip):
+        """Updates the server's target IP and rebinds the sockets."""
+        self.server_ip = new_ip.strip()
+        self.serverAddressPort = (self.server_ip, self.server_port)
+
+        print(f"Updated server IP to: {self.server_ip}")
+
+        # Restart sockets
+        self.broadcast_socket.close()
+        self.receive_socket.close()
+
+        self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.receive_socket.bind(self.clientAddressPort)
+        self.receive_socket.settimeout(1.0)
+
+        print("Sockets restarted with new IP.")
 
 # Example usage
 if __name__ == "__main__":
