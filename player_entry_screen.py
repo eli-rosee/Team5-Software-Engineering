@@ -784,12 +784,14 @@ class PlayerEntryScreen(QWidget):
             print("Closing existing network instance...")
             PlayerEntryScreen.photon_network_instance.close()
             
-            # ✅ Ensure the sockets are fully closed before creating a new instance
-            time.sleep(1)  # Give OS time to release the ports
+            time.sleep(1) 
 
          try:
-            # ✅ Now safely create a new instance
-            PlayerEntryScreen.photon_network_instance = PhotonNetwork(server_ip=new_ip, server_port=7500, client_port=7501)
+            PlayerEntryScreen.photon_network_instance = PhotonNetwork(
+            server_ip=new_ip, server_port=7500, client_port=7501
+            )
+
+            self.photon_network = PlayerEntryScreen.photon_network_instance 
             print(f"✅ Successfully changed server IP to {new_ip}")
 
          except socket.error as e:
