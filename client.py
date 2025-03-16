@@ -28,13 +28,12 @@ class PhotonNetwork:
         """Send the start signal ("202") to the game software."""
         message = "202".encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print("Sent start signal: 202")
+        print("202")
 
     def equipID(self, equip_id):
         """Send the equipment ID to the server."""
         message = equip_id.encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print(f"{equip_id}")
 
     def listen_for_responses(self):
         """Continuously listen for incoming data on the receive socket."""
@@ -42,11 +41,11 @@ class PhotonNetwork:
             try:
                 data, _ = self.receive_socket.recvfrom(1024)
                 message = data.decode('utf-8')
-                print(f"Received from game software: {message}")
+                print(f"{message}")
             except socket.timeout:
                 continue
             except Exception as e:
-                print(f"Error receiving data: {e}")
+                print(f"{e}")
                 break
 
     def close(self):
