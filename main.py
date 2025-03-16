@@ -10,6 +10,7 @@ from PyQt6.QtCore import QTimer, QMetaObject, Qt, QObject, pyqtSlot
 from pynput import keyboard
 import threading
 import server 
+import os
 
 main_window = None
 countdown_window = None
@@ -118,22 +119,22 @@ def start_server_in_thread(server_ip="127.0.0.1"):
     """ Start the server in a separate thread with a given IP. """
     global server_thread, server_running
 
-    # ✅ Stop the old server before starting a new one
-    if server_thread and server_thread.is_alive():
-        stop_server()
+    stop_server()
 
     def run_server():
         global server_running
         try:
+            
+            time.sleep(1)  
             server_running = True
             server.start_server(server_ip=server_ip, server_port=7500, client_port=7501)
-        except Exception as e:
-            print(f"Error starting server: {e}")
-
-    # ✅ Create a new server thread
-    server_thread = threading.Thread(target=run_server, daemon=True)
-    server_thread.start()
-    print(f"✅ Server started on {server_ip}")
+        except OSError as e:
+            if e.errno == 98: 
+                print("⚠️ Error: Address already in use. Retrying in 2 seconds...")
+                time.sleep(2)
+                run_server() 
+            else:
+                print(f"Error starting server: {e}")
 
 
 def stop_server():
@@ -141,10 +142,19 @@ def stop_server():
     global server_running, server_thread
 
     if server_thread and server_thread.is_alive():
-        server_running = False  # ✅ Flag to stop the server safely
-        server_thread.join(timeout=2)  # ✅ Wait for thread to finish
-        server_thread = None  # ✅ Reset thread reference
-        print("❌ Server stopped.")
+        server_running = False 
+
+        try:
+            import psutil  
+            for conn in psutil.net_connections(kind='inet'):
+                if conn.laddr.port == 7500:
+                    os.kill(conn.pid, signal.SIGTERM)  
+                    print(f"🔴 Killed process using port 7500: PID {conn.pid}")
+        except Exception as e:
+            print(f"Warning: Could not check for existing connections - {e}")
+
+        server_thread.join(timeout=2)  
+        server_thread = None
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
