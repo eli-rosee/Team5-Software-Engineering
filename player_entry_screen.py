@@ -539,6 +539,7 @@ class PlayerEntryScreen(QWidget):
                 self.count +=1
                 return
         else:
+            self.directions.setText(f"Enter a NEW PLAYER ID:") 
             if hasattr(self, "worker") and self.worker.isRunning():
                 return
 
