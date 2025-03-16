@@ -113,12 +113,37 @@ def on_key_event(key):
     except AttributeError as e:
         print(f"Error: Key press event encountered an issue: {e}")
 
-def start_server_in_thread():
-    """ Function to start the server in a separate thread """
-    try:
-        server.start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501)
-    except Exception as e:
-        print(f"Error starting server: {e}")
+def start_server_in_thread(server_ip="127.0.0.1"):
+    """ Start the server in a separate thread with a given IP. """
+    global server_thread, server_running
+
+    # ✅ Stop the old server before starting a new one
+    if server_thread and server_thread.is_alive():
+        stop_server()
+
+    def run_server():
+        global server_running
+        try:
+            server_running = True
+            server.start_server(server_ip=server_ip, server_port=7500, client_port=7501)
+        except Exception as e:
+            print(f"Error starting server: {e}")
+
+    # ✅ Create a new server thread
+    server_thread = threading.Thread(target=run_server, daemon=True)
+    server_thread.start()
+    print(f"✅ Server started on {server_ip}")
+
+
+def stop_server():
+    """Stop the currently running server thread."""
+    global server_running, server_thread
+
+    if server_thread and server_thread.is_alive():
+        server_running = False  # ✅ Flag to stop the server safely
+        server_thread.join(timeout=2)  # ✅ Wait for thread to finish
+        server_thread = None  # ✅ Reset thread reference
+        print("❌ Server stopped.")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -127,8 +152,7 @@ if __name__ == "__main__":
     listener = keyboard.Listener(on_press=on_key_event)
     listener.start()
 
-    server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
-    server_thread.start()
+    start_server_in_thread()
 
 
     try:
