@@ -667,6 +667,8 @@ class PlayerEntryScreen(QWidget):
             red_players, green_players = self.get_player_data()
             if not red_players or not green_players:
                 self.directions.setText("There is an empty team")
+            elif not all(player[1].strip() and player[2].strip() for player in red_players + green_players):
+                self.directions.setText("Please fill in all equipment IDs and codenames before starting the game")
             else:
                 self.hide()
                 self.countdown_screen = CountdownWindow(self)
