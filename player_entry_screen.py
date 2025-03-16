@@ -779,6 +779,7 @@ class PlayerEntryScreen(QWidget):
  
          popup.close()  # Close the input popup if valid
          self.photon_network.server_ip = new_ip.strip()
+         print("changed to ", new_ip.strip())
          #self.photon_network.update_ip(new_ip.strip())
 
 if __name__ == "__main__":
