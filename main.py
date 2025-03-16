@@ -17,7 +17,7 @@ splash_window = None
 player_entry_screen_window = None  
 play_action_screen_window = None
 global play_action_handler
-erver_thread = None
+server_thread = None
 
 class CountdownHandler(QObject):
     @pyqtSlot() 
