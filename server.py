@@ -22,9 +22,9 @@ class Server:
 
         try:
             self.server_socket.bind((self.server_ip, self.server_port))
-            print(f"✅ Server listening on {self.server_ip}:{self.server_port}")
+            print(f"Server listening on {self.server_ip}:{self.server_port}")
         except OSError as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
             self.running = False
             return
 
@@ -49,18 +49,18 @@ class Server:
             self.running = False
             if self.server_socket:
                 self.server_socket.close()
-            print("❌ Server stopped.")
+            print("Server stopped.")
 
     def restart_server(self, new_ip):
         """Restart the server with a new IP."""
-        print(f"🔄 Restarting server with new IP: {new_ip}...")
+        print(f"Restarting server with new IP: {new_ip}...")
 
-        self.stop_server()  # ✅ Stop the existing server first
+        self.stop_server()  #  Stop the existing server first
         self.server_ip = new_ip.strip()
         self.thread = threading.Thread(target=self.start_server, daemon=True)
         self.thread.start()
 
-# ✅ Create a global `server_instance`
+# Create a global `server_instance`
 server_instance = Server()
 
 # Example usage
