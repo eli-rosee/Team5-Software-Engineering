@@ -68,13 +68,20 @@ def on_key_event(key):
                 QTimer.singleShot(0, main_window.clear_all_players)
         elif key == keyboard.Key.f5:
             red_players, green_players = player_entry_screen_window.get_player_data()
-            missing_data_red = [p for p in red_players if not p[1] or not p[2]]
-            missing_data_green = [p for p in green_players if not p[1] or not p[2]]
+            missing_data = False
 
-    
+            for row in player_entry_screen_window.red_row + player_entry_screen_window.green_row:  
+                player_id = row[3].text().strip()
+                code_name = row[4].text().strip()
+                equip_id = row[5].text().strip()
+
+                if player_id and (not code_name or not equip_id):  
+                    missing_data = True  
+                    break  
+
             if not red_players or not green_players:
                 player_entry_screen_window.directions.setText("There is an empty team")
-            elif missing_data_red or missing_data_green:
+            elif missing_data:
                 player_entry_screen_window.directions.setText("Please fill in all equipment IDs and codenames before starting the game")
             else:
                 if splash_window:
