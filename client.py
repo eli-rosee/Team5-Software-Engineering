@@ -64,15 +64,29 @@ class PhotonNetwork:
 
         print(f"Updated server IP to: {self.server_ip}")
 
-        # Restart sockets
-        self.broadcast_socket.close()
-        self.receive_socket.close()
+        # Close old sockets properly
+        self._running = False  # Stop listening thread
 
+        try:
+            self.receive_socket.shutdown(socket.SHUT_RDWR)  # Fully shut down socket
+        except OSError:
+            pass  # Ignore if socket is already closed
+
+        self.receive_socket.close()
+        self.broadcast_socket.close()
+
+        # Wait briefly to ensure the OS releases the port
+        time.sleep(1)
+
+        # Recreate the sockets
         self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.receive_socket.bind(self.clientAddressPort)
+        self.receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow reuse
+        self.receive_socket.bind(self.clientAddressPort)  # Rebind with new IP
         self.receive_socket.settimeout(1.0)
 
+        self._running = True
         print("Sockets restarted with new IP.")
 
 # Example usage
