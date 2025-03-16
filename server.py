@@ -41,6 +41,13 @@ def update_ip(self, new_ip):
         print(f"Server IP changed to: {self.server_ip}")
         threading.Thread(target=self.start_server, daemon=True).start()
 
+def restart_server(self, new_ip):
+        """Restart the server with a new IP."""
+        self.stop_server()
+        self.server_ip = new_ip.strip()
+        self.thread = threading.Thread(target=self.start_server, daemon=True)
+        self.thread.start()
+
 # Example usage
 if __name__ == "__main__":
     # Start the server in a separate thread
