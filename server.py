@@ -8,12 +8,11 @@ class Server:
         self.client_port = client_port
         self.server_socket = None
         self.running = False
-        self.thread = None
+        self.thread = None\
+        
     def start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501):
         """Start the UDP server."""
         buffer_size = 1024
-
-        server_ip = "127.0.0.1"
 
         # Create a UDP socket
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
