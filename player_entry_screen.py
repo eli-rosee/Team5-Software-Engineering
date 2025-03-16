@@ -4,10 +4,14 @@ from functools import partial
 import sys
 import time
 import socket
+import subprocess
+import os
+import signal
 from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
 from client import PhotonNetwork  
+import server
 from play_action_screen import PlayActionScreen 
 from countdown import CountdownWindow
 
@@ -46,6 +50,21 @@ class PlayerEntryScreen(QWidget):
 
         return PlayerEntryScreen.photon_network_instance 
     
+    def start_server(self, server_ip="127.0.0.1"):
+        """Start the server process."""
+        if self.server_process:
+            self.stop_server()  
+
+        self.server_process = subprocess.Popen(["python3", "server.py"], preexec_fn=os.setsid)
+        print(f"Server started on {server_ip}")
+
+    def stop_server(self):
+        """Stop the currently running server process."""
+        if self.server_process:
+            os.killpg(os.getpgid(self.server_process.pid), signal.SIGTERM)  
+            self.server_process = None
+            print("Server stopped.")
+    
     def __init__(self, photon_network=None):
         super().__init__()
         self.change_tab_thread = ChangeTabInd(self) 
@@ -56,6 +75,9 @@ class PlayerEntryScreen(QWidget):
         self.popup_active = False 
         self.last_player_id = None
         QApplication.setStyle("windows") 
+        self.server_process = None  
+        self.start_server()  
+        
         
         if photon_network is None:
             if PlayerEntryScreen.photon_network_instance is None:
@@ -778,8 +800,9 @@ class PlayerEntryScreen(QWidget):
  
          popup.close()  # Close the input popup if valid
          self.photon_network.server_ip = new_ip.strip()
-         self.photon_network.client_ip = new_ip.strip()
          self.photon_network.update_ip(new_ip.strip())
+         self.stop_server() 
+         self.start_server(new_ip)  
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
