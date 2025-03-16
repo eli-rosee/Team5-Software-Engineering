@@ -12,7 +12,8 @@
      - unzip Team-5-Software-Engineering-main.zip
      - mv Team-5-Software-Engineering-main project (rename it for simplicity)
   
-  project directory should look like this: ![image](https://github.com/user-attachments/assets/59fbe672-e726-4402-a866-fc87c456699c)
+  project directory should look like this: ![image](https://github.com/user-attachments/assets/deffecee-e484-410f-b826-ac0375ac15e9)
+
   
   graphics directory should look like this:                                                                                         
   ![image](https://github.com/user-attachments/assets/a1b09c8e-ce23-4807-93cc-081b7acebe5f)
