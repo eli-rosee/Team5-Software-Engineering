@@ -97,6 +97,7 @@ def on_key_event(key):
                 QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
                 time.sleep(30)
                 QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
+                player_entry_screen_window.photon_network.send_start_signal()
 
         elif key == keyboard.Key.esc:
             if main_window and hasattr(main_window, 'timer'):
