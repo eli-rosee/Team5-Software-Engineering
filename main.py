@@ -70,6 +70,8 @@ def on_key_event(key):
             red_players, green_players = player_entry_screen_window.get_player_data()
             if not red_players or not green_players:
                 player_entry_screen_window.directions.setText("There is an empty team")
+            elif not all(player[1].strip() and player[2].strip() for player in red_players + green_players):
+                player_entry_screen_window.directions.setText("Please fill in all equipment IDs and codenames before starting the game")
             else:
                 if splash_window:
                     splash_window.close()
