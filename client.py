@@ -16,6 +16,7 @@ class PhotonNetwork:
 
         # Set up the broadcast socket
         self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.broadcast_socket.bind((self.client_ip, self.client_port))
 
         # Set up the receive socket
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -61,8 +62,6 @@ class PhotonNetwork:
     def update_ip(self, new_ip):
         self.server_ip = new_ip.strip()
         self.serverAddressPort = (self.server_ip, self.server_port)
-
-        print(f"🔄 Updated server IP to: {self.server_ip}")
 
         self._running = False  # Stop receive thread
 
