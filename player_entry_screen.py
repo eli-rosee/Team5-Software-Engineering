@@ -665,14 +665,17 @@ class PlayerEntryScreen(QWidget):
             QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
         elif index == 33:  # F5
             red_players, green_players = self.get_player_data()
-            self.hide()
-            self.countdown_screen = CountdownWindow(self)
-            self.countdown_screen.showFullScreen()
-            QTimer.singleShot(30000, self.finish_countdown)
+            if not red_players or not green_players:
+                self.directions.setText("There is an empty team")
+            else:
+                self.hide()
+                self.countdown_screen = CountdownWindow(self)
+                self.countdown_screen.showFullScreen()
+                QTimer.singleShot(30000, self.finish_countdown)
 
-            self.tab_ind = 33
-            QApplication.processEvents()
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
+                self.tab_ind = 33
+                QApplication.processEvents()
+                QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
         elif index == 34:  # F7
             print("Change IP")
             self.show_ip_input_dialog()
