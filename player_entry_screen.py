@@ -779,11 +779,7 @@ class PlayerEntryScreen(QWidget):
  
          popup.close()  # Close the input popup if valid
          self.photon_network.server_ip = new_ip.strip()
-         self.photon_network.client_ip = new_ip.strip()
          self.photon_network.update_ip(new_ip.strip())
-         from main import start_server_in_thread, stop_server
-         stop_server()
-         start_server_in_thread(new_ip)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
