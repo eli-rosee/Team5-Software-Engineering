@@ -665,9 +665,13 @@ class PlayerEntryScreen(QWidget):
             QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
         elif index == 33:  # F5
             red_players, green_players = self.get_player_data()
+            missing_data_red = [p for p in red_players if not p[1] or not p[2]]
+            missing_data_green = [p for p in green_players if not p[1] or not p[2]]
+
             if not red_players or not green_players:
                 self.directions.setText("There is an empty team")
-            elif not all(player[1].strip() and player[2].strip() for player in red_players + green_players):
+            elif missing_data_red or missing_data_green:
+                self.directions.setText("Please fill in all equipment IDs and codenames before starting the game")
                 self.directions.setText("Please fill in all equipment IDs and codenames before starting the game")
             else:
                 self.hide()
