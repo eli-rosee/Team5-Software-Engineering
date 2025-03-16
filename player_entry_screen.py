@@ -779,7 +779,6 @@ class PlayerEntryScreen(QWidget):
  
          popup.close()  # Close the input popup if valid
          self.photon_network.server_ip = new_ip.strip()
-         self.serverAddressPort = (self.server_ip, self.server_port)
          print("changed to ", new_ip.strip())
          if PlayerEntryScreen.photon_network_instance:
             print("Closing existing network instance...")
@@ -794,7 +793,7 @@ class PlayerEntryScreen(QWidget):
 
             self.photon_network = PlayerEntryScreen.photon_network_instance 
             print(f"✅ Successfully changed server IP to {new_ip}")
-            #self.photon_network.update_ip()
+            self.photon_network.update_ip()
 
          except socket.error as e:
             print(f"❌ Error binding to new IP {new_ip}: {e}")
