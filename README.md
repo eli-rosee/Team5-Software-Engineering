@@ -16,7 +16,8 @@
 
   
   graphics directory should look like this:                                                                                         
-  ![image](https://github.com/user-attachments/assets/a1b09c8e-ce23-4807-93cc-081b7acebe5f)
+  ![image](https://github.com/user-attachments/assets/6b49b89c-efde-4bbf-89f3-25672ffc4acc)
+
     
   3. Install required libraries
      - sudo apt update (password: student)
