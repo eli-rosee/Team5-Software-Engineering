@@ -26,7 +26,6 @@
      - sudo pip3 install pynput==1.7.6
      - pip install psycopg2-binary
      - sudo apt install libxcb-cursor0
-     - sudo apt update
      - sudo apt install tcpdump -y
     
   4. Running the application (must be inside project folder)
