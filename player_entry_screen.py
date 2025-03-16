@@ -781,8 +781,20 @@ class PlayerEntryScreen(QWidget):
          self.photon_network.server_ip = new_ip.strip()
          print("changed to ", new_ip.strip())
          if PlayerEntryScreen.photon_network_instance:
+            print("Closing existing network instance...")
             PlayerEntryScreen.photon_network_instance.close()
-         PlayerEntryScreen.photon_network_instance = PhotonNetwork(server_ip=new_ip.strip(), server_port=7500, client_port=7501)
+            
+            # ✅ Ensure the sockets are fully closed before creating a new instance
+            time.sleep(1)  # Give OS time to release the ports
+
+         try:
+            # ✅ Now safely create a new instance
+            PlayerEntryScreen.photon_network_instance = PhotonNetwork(server_ip=new_ip, server_port=7500, client_port=7501)
+            print(f"✅ Successfully changed server IP to {new_ip}")
+
+         except socket.error as e:
+            print(f"❌ Error binding to new IP {new_ip}: {e}")
+
          #self.photon_network.update_ip(new_ip.strip())
 
 if __name__ == "__main__":
