@@ -17,7 +17,7 @@ class PhotonNetwork:
 
         # Set up the broadcast socket
         self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.broadcast_socket.bind((self.client_ip, self.client_port))
+        #self.broadcast_socket.bind((self.client_ip, self.client_port))
 
         # Set up the receive socket
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
