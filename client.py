@@ -58,36 +58,35 @@ class PhotonNetwork:
         print("Photon network connections closed.")
 
     def update_ip(self, new_ip):
-        """Updates the server's target IP and rebinds the sockets."""
         self.server_ip = new_ip.strip()
         self.serverAddressPort = (self.server_ip, self.server_port)
 
-        print(f"Updated server IP to: {self.server_ip}")
+        print(f"🔄 Updated server IP to: {self.server_ip}")
 
-        # Close old sockets properly
-        self._running = False  # Stop listening thread
+        self._running = False  # Stop receive thread
 
-        try:
-            self.receive_socket.shutdown(socket.SHUT_RDWR)  # Fully shut down socket
-        except OSError:
-            pass  # Ignore if socket is already closed
+        def safe_close(sock):
+            if sock:
+                try:
+                    sock.shutdown(socket.SHUT_RDWR)  
+                except OSError:
+                    pass  
+                sock.close()
 
-        self.receive_socket.close()
-        self.broadcast_socket.close()
+        safe_close(self.receive_socket)
+        safe_close(self.broadcast_socket)
 
-        # Wait briefly to ensure the OS releases the port
         time.sleep(1)
 
-        # Recreate the sockets
         self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow reuse
-        self.receive_socket.bind(self.clientAddressPort)  # Rebind with new IP
+        self.receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.receive_socket.bind(self.clientAddressPort)
         self.receive_socket.settimeout(1.0)
 
         self._running = True
-        print("Sockets restarted with new IP.")
+        self.receive_thread = threading.Thread(target=self.listen_for_responses, daemon=True)
+        self.receive_thread.start()
 
 # Example usage
 if __name__ == "__main__":
