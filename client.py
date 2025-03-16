@@ -9,6 +9,7 @@ class PhotonNetwork:
     def __init__(self, server_ip="127.0.0.1", server_port=7500, client_ip="127.0.0.1", client_port=7501):
         self.server_ip = server_ip  
         self.server_port = server_port
+        self.client_ip = client_ip
         
         self.serverAddressPort = (server_ip, server_port)
         self.clientAddressPort = (client_ip, client_port)
