@@ -787,7 +787,7 @@ class PlayerEntryScreen(QWidget):
             time.sleep(1) 
 
          try:
-            server.restart_server(new_ip.strip())
+            server.restart_server(new_ip)
             PlayerEntryScreen.photon_network_instance = PhotonNetwork(
             server_ip=new_ip, server_port=7500, client_port=7501
             )
