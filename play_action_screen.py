@@ -175,7 +175,6 @@ class PlayActionScreen(QWidget):
         self.game_timer.stop()  # Stop the game timer
         from main import music_player
         music_player.stop_music()
-        event.accept()
         self.close()  
 
         self.player_entry_screen.showMaximized() 
