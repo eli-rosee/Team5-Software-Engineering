@@ -19,6 +19,9 @@ class PlayActionScreen(QWidget):
         self.photon_network = photon_network
         self.player_entry_screen = player_entry_screen_instance 
 
+        self.red_player_labels = []
+        self.green_player_labels = []
+
         main_layout = QHBoxLayout()
 
         # Red team layout
@@ -34,6 +37,9 @@ class PlayActionScreen(QWidget):
             player_label.setStyleSheet("font-size: 16px; color: white;")
             player_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)  
             red_team_layout.addWidget(player_label)
+
+            self.red_player_labels[player_id] = player_label
+
 
         main_layout.addLayout(red_team_layout, stretch=1)
 
@@ -76,6 +82,8 @@ class PlayActionScreen(QWidget):
             player_label.setStyleSheet("font-size: 16px; color: white;")
             player_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)  
             green_team_layout.addWidget(player_label)
+
+            self.green_player_labels[player_id] = player_label
 
         main_layout.addLayout(green_team_layout, stretch=1)
 
