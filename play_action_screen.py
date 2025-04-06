@@ -155,6 +155,12 @@ class PlayActionScreen(QWidget):
                 counter += 1
                 time.sleep(random.randint(1, 3))  
 
+    def closeEvent(self, event):
+        from main import music_player
+        if music_player:
+            music_player.stop_music()
+        event.accept()
+
     def append_to_current_action(self, text):
         """Append text to the current action box and ensure it scrolls down."""
         self.current_action_text.append(text) 
