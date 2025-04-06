@@ -60,6 +60,10 @@ class CountdownWindow(QMainWindow):
         """Updates the countdown image every second."""
         self.countdown_time -= 1
 
+        if (self.countdown_time == 25):
+            from music import music_player
+            music_player.play_random_music()  
+
         if self.countdown_time >= 0:
             self.update_image()
         else:
