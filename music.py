@@ -7,14 +7,14 @@ import pygame
 class MusicPlayer:
     def __init__(self):
         self.tracks = [
-            "music/Track01.mp3",
-            "music/Track02.mp3",
-            "music/Track03.mp3",
-            "music/Track04.mp3",
-            "music/Track05.mp3",
-            "music/Track06.mp3",
-            "music/Track07.mp3",
-            "music/Track08.mp3"
+            "music/Track01.mp4",
+            "music/Track02.mp4",
+            "music/Track03.mp4",
+            "music/Track04.mp4",
+            "music/Track05.mp4",
+            "music/Track06.mp4",
+            "music/Track07.mp4",
+            "music/Track08.mp4"
         ]
         self.playing = False
         pygame.mixer.init()
