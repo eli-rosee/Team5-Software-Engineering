@@ -3,45 +3,7 @@ from PyQt6.QtCore import QTimer, Qt
 import random
 import threading
 import time
-from playsound import playsound
-import pygame
-music_player = None
 
-class MusicPlayer:
-    def __init__(self):
-        self.tracks = [
-            "music/Track01.mp3",
-            "music/Track02.mp3",
-            "music/Track03.mp3",
-            "music/Track04.mp3",
-            "music/Track05.mp3",
-            "music/Track06.mp3",
-            "music/Track07.mp3",
-            "music/Track08.mp3"
-        ]
-        self.playing = False
-        pygame.mixer.init()
-
-    def play_random_music(self):
-        def play_loop():
-            self.playing = True
-            while self.playing:
-                track = random.choice(self.tracks)
-                print(f"Now playing: {track}")
-                pygame.mixer.music.load(track)
-                pygame.mixer.music.play()
-                while pygame.mixer.music.get_busy():
-                    if not self.playing:
-                        pygame.mixer.music.stop()
-                        break
-                    time.sleep(0.1)
-
-        threading.Thread(target=play_loop, daemon=True).start()
-
-    def stop_music(self):
-        self.playing = False
-        pygame.mixer.music.stop()
-        print("Music stopped.")
 
 
 class PlayActionScreen(QWidget):
@@ -50,10 +12,8 @@ class PlayActionScreen(QWidget):
         self.setWindowTitle("Play Action Screen")
         self.showMaximized()
         self.setStyleSheet("background-color: black; color: white;")
-        global music_player
-        music_player = MusicPlayer()
-        music_player.play_random_music()
-    
+        from music import music_player
+        music_player.play_random_music()  
 
         # Store players with their equipment IDs
         self.red_players = red_players
@@ -200,9 +160,8 @@ class PlayActionScreen(QWidget):
                 time.sleep(random.randint(1, 3))  
 
     def closeEvent(self, event):
-        global music_player
-        music_player = MusicPlayer()
-        music_player.play_random_music()
+        from music import music_player
+        music_player.stop_music()
         event.accept()
 
     def append_to_current_action(self, text):
