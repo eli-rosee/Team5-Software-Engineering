@@ -157,8 +157,7 @@ class PlayActionScreen(QWidget):
 
     def closeEvent(self, event):
         from main import music_player
-        if music_player:
-            music_player.stop_music()
+        music_player.stop_music()
         event.accept()
 
     def append_to_current_action(self, text):
