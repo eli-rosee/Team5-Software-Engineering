@@ -687,6 +687,8 @@ class PlayerEntryScreen(QWidget):
                 self.countdown_screen.showFullScreen()
                 QTimer.singleShot(30000, self.finish_countdown)
                 self.photon_network.send_start_signal()
+                from main import music_player
+                music_player.play_random_music()
 
                 self.tab_ind = 33
                 QApplication.processEvents()
