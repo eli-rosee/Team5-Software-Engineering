@@ -12,8 +12,6 @@ class PlayActionScreen(QWidget):
         self.setWindowTitle("Play Action Screen")
         self.showMaximized()
         self.setStyleSheet("background-color: black; color: white;")
-        from music import music_player
-        music_player.play_random_music()  
 
         # Store players with their equipment IDs
         self.red_players = red_players
