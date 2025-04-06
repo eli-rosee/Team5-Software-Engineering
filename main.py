@@ -20,7 +20,6 @@ splash_window = None
 player_entry_screen_window = None  
 play_action_screen_window = None
 global play_action_handler
-global music_player 
 music_player = None
 
 class MusicPlayer:
@@ -58,8 +57,6 @@ class MusicPlayer:
         self.playing = False
         pygame.mixer.music.stop()
         print("Music stopped.")
-
-music_player = MusicPlayer()
 
 class CountdownHandler(QObject):
     @pyqtSlot() 
@@ -176,11 +173,12 @@ if __name__ == "__main__":
     server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
     server_thread.start()
 
+    music_player = MusicPlayer()
+
 
     try:
         splash_window = splash.MainWindow()
         splash_window.show()
-        music_player.stop_music()
     except Exception as e:
         print(f"Error initializing splash screen: {e}")
         sys.exit(1) 
@@ -201,7 +199,6 @@ if __name__ == "__main__":
             QMetaObject.invokeMethod(
                 main_window.red_row[0][3], "setFocus", Qt.ConnectionType.QueuedConnection
             )
-            music_player.stop_music()
         except Exception as e:
             print(f"Error initializing Player Entry Screen: {e}")
             sys.exit(1)  
