@@ -5,6 +5,9 @@ import player_entry_screen
 import countdown
 import play_action_screen
 import time
+import random
+import pygame
+from playsound import playsound
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer, QMetaObject, Qt, QObject, pyqtSlot
 from pynput import keyboard
@@ -17,6 +20,43 @@ splash_window = None
 player_entry_screen_window = None  
 play_action_screen_window = None
 global play_action_handler
+music_player = None
+
+class MusicPlayer:
+    def __init__(self):
+        self.tracks = [
+            "music/Track01.mp3",
+            "music/Track02.mp3",
+            "music/Track03.mp3",
+            "music/Track04.mp3",
+            "music/Track05.mp3",
+            "music/Track06.mp3",
+            "music/Track07.mp3",
+            "music/Track08.mp3"
+        ]
+        self.playing = False
+        pygame.mixer.init()
+
+    def play_random_music(self):
+        def play_loop():
+            self.playing = True
+            while self.playing:
+                track = random.choice(self.tracks)
+                print(f"Now playing: {track}")
+                pygame.mixer.music.load(track)
+                pygame.mixer.music.play()
+                while pygame.mixer.music.get_busy():
+                    if not self.playing:
+                        pygame.mixer.music.stop()
+                        break
+                    time.sleep(0.1)
+
+        threading.Thread(target=play_loop, daemon=True).start()
+
+    def stop_music(self):
+        self.playing = False
+        pygame.mixer.music.stop()
+        print("Music stopped.")
 
 class CountdownHandler(QObject):
     @pyqtSlot() 
@@ -97,6 +137,10 @@ def on_key_event(key):
                 QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
                 time.sleep(30)
                 QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
+                global music_player
+                music_player = MusicPlayer()
+                music_player.play_random_music()
+
                 player_entry_screen_window.photon_network.send_start_signal()
 
         elif key == keyboard.Key.esc:
@@ -120,6 +164,7 @@ def start_server_in_thread():
         #server.start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501)
     except Exception as e:
         print(f"Error starting server: {e}")
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
