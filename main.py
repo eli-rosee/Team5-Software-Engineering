@@ -20,6 +20,7 @@ splash_window = None
 player_entry_screen_window = None  
 play_action_screen_window = None
 global play_action_handler
+global music_player 
 music_player = None
 
 class MusicPlayer:
@@ -139,7 +140,6 @@ def on_key_event(key):
                 QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
                 time.sleep(30)
                 QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
-                global music_player
                 music_player.play_random_music()
 
                 player_entry_screen_window.photon_network.send_start_signal()
