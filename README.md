@@ -27,6 +27,7 @@
      - pip install psycopg2-binary
      - sudo apt install libxcb-cursor0
      - sudo apt install tcpdump -y
+     - pip install playsound
 
     
   4. Running the application (must be inside project folder)
