@@ -28,6 +28,7 @@
      - sudo apt install libxcb-cursor0
      - sudo apt install tcpdump -y
      - pip install playsound
+     - pip3 install pygame
 
     
   4. Running the application (must be inside project folder)
