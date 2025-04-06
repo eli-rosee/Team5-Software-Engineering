@@ -141,7 +141,6 @@ def on_key_event(key):
                 time.sleep(30)
                 QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
                 music_player.play_random_music()
-
                 player_entry_screen_window.photon_network.send_start_signal()
 
         elif key == keyboard.Key.esc:
@@ -181,6 +180,7 @@ if __name__ == "__main__":
     try:
         splash_window = splash.MainWindow()
         splash_window.show()
+        music_player.stop_music()
     except Exception as e:
         print(f"Error initializing splash screen: {e}")
         sys.exit(1) 
@@ -201,6 +201,7 @@ if __name__ == "__main__":
             QMetaObject.invokeMethod(
                 main_window.red_row[0][3], "setFocus", Qt.ConnectionType.QueuedConnection
             )
+            music_player.stop_music()
         except Exception as e:
             print(f"Error initializing Player Entry Screen: {e}")
             sys.exit(1)  
