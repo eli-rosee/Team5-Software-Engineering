@@ -58,6 +58,8 @@ class MusicPlayer:
         pygame.mixer.music.stop()
         print("Music stopped.")
 
+music_player = MusicPlayer()
+
 class CountdownHandler(QObject):
     @pyqtSlot() 
     def open_countdown_window(self):
@@ -138,7 +140,6 @@ def on_key_event(key):
                 time.sleep(30)
                 QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
                 global music_player
-                music_player = MusicPlayer()
                 music_player.play_random_music()
 
                 player_entry_screen_window.photon_network.send_start_signal()
