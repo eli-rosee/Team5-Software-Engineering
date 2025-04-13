@@ -430,8 +430,11 @@ class PlayerEntryScreen(QWidget):
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
 
-        if not isinstance(player_id, int) or isinstance(equip_id, int):
-            self.directions.setText("Player ID or Equipment ID must be an Int")
+        try:
+            int_player_id = int(player_id)
+            int_equip_id = int(equip_id)
+        except ValueError:
+            self.directions.setText("Player ID and Equipment ID must be integers")
             return None
         
         DB_NAME = "photon"
