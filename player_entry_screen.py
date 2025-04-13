@@ -429,6 +429,10 @@ class PlayerEntryScreen(QWidget):
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
+
+        if not isinstance(player_id, int) or isinstance(equip_id, int):
+            self.directions.setText("Player ID or Equipment ID must be an Int")
+            return None
         
         DB_NAME = "photon"
         DB_HOST = "127.0.0.1"
