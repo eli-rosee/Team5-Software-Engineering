@@ -430,20 +430,26 @@ class PlayerEntryScreen(QWidget):
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
 
-        if not player_id or not equip_id:
-            self.directions.setText("Player ID and Equipment ID cannot be empty")
+        if not player_id:
+            self.directions.setText("Player ID cannot be empty")
             return None
 
         try:
             int_player_id = int(player_id)
-            int_equip_id = int(equip_id)
         except ValueError:
-            self.directions.setText("Player ID and Equipment ID must be integers")
+            self.directions.setText("Player ID must be an integer")
             return None
 
-        # If this point is reached, both are valid ints
-        print(f"Player ID: {int_player_id}, Equip ID: {int_equip_id}")
-        
+        if equip_id:
+            try:
+                int_equip_id = int(equip_id)
+            except ValueError:
+                self.directions.setText("Equipment ID must be an integer")
+                return None
+        else:
+            int_equip_id = None  
+
+        # I        
         DB_NAME = "photon"
         DB_HOST = "127.0.0.1"
         DB_PORT = "5432"  
