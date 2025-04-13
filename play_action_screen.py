@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QPushButton, QApplication
 from PyQt6.QtCore import QTimer, Qt
+import sys
 import random
 import threading
 import time
@@ -19,8 +20,8 @@ class PlayActionScreen(QWidget):
         self.photon_network = photon_network
         self.player_entry_screen = player_entry_screen_instance 
 
-        self.red_player_labels = []
-        self.green_player_labels = []
+        self.red_player_labels = {}
+        self.green_player_labels = {}
 
         main_layout = QHBoxLayout()
 
@@ -38,7 +39,8 @@ class PlayActionScreen(QWidget):
             player_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)  
             red_team_layout.addWidget(player_label)
 
-            self.red_player_labels[player_id] = player_label
+            self.red_player_labels[f'{player_id}'] = player_label
+            print(self.red_player_labels)
 
 
         main_layout.addLayout(red_team_layout, stretch=1)
@@ -83,7 +85,8 @@ class PlayActionScreen(QWidget):
             player_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)  
             green_team_layout.addWidget(player_label)
 
-            self.green_player_labels[player_id] = player_label
+            self.green_player_labels[f'{player_id}'] = player_label
+            print(self.green_player_labels)
 
         main_layout.addLayout(green_team_layout, stretch=1)
 
@@ -189,8 +192,6 @@ class PlayActionScreen(QWidget):
 
 
 if __name__ == "__main__":
-    from PyQt6.QtWidgets import QApplication
-    import sys
     app = QApplication(sys.argv)
     red_players = [("6005", "Scooby Deo Mt Opus", "111"), ("5000", "Euryum's Euryus Auxilus", "112")]
     green_players = [("6005", "Scooby Deo Mt Opus", "221"), ("5000", "Opus Mt Scooby Deo", "222")]
