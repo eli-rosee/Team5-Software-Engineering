@@ -39,6 +39,8 @@ class PhotonNetwork:
         """Send the stop signal ("221") to the server."""
         message = "221".encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
+        self.broadcast_socket.sendto(message, self.serverAddressPort)
+        self.broadcast_socket.sendto(message, self.serverAddressPort)
 
     def equipID(self, equip_id):
         """Send the equipment ID to the server."""
