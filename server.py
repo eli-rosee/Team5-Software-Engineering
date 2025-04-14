@@ -17,7 +17,7 @@ class Server:
 
         # Create a UDP socket
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        server_socket.bind((server_ip, server_port))
+        server_socket.bind((server_ip, client_port))
 
         print(f"Server listening on {server_ip}:{server_port}")
 
