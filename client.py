@@ -21,7 +21,7 @@ class PhotonNetwork:
 
         # Set up the receive socket
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.receive_socket.bind(self.clientAddressPort)
+        #self.receive_socket.bind(self.clientAddressPort)
         self.receive_socket.settimeout(1.0)  # 1-second timeout
 
         # Thread control
@@ -89,7 +89,7 @@ class PhotonNetwork:
         self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.receive_socket.bind(self.clientAddressPort)
+        #self.receive_socket.bind(self.clientAddressPort)
         self.receive_socket.settimeout(1.0)
 
         self._running = True
