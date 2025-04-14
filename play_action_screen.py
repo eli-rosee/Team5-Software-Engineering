@@ -227,8 +227,13 @@ class PlayActionScreen(QWidget):
         music_player.stop_music()
         event.accept()
 
+    def remove_b_symbol(self, name: str) -> str:
+        return name.replace("🅱", "").strip()
+
+
     def append_to_current_action(self, text):
         """Append text to the current action box and ensure it scrolls down."""
+        text = self.remove_b_symbol(text)
         self.current_action_text.append(text) 
         self.current_action_text.ensureCursorVisible()  
         cursor = self.current_action_text.textCursor()  
@@ -238,35 +243,60 @@ class PlayActionScreen(QWidget):
     def change_team_score(self, text):
         player_name = text.split(" hit")[0].strip()
 
-        red_names = [name for _, name, _ in self.red_players]
-        green_names = [name for _, name, _ in self.green_players]
+        red_names = [name.replace("🅱 ", "") for _, name, _ in self.red_players]
+        green_names = [name.replace("🅱 ", "") for _, name, _ in self.green_players]
 
         if player_name in red_names:
             self.red_team_score += 100
             self.red_team_score_label.setText(str(self.red_team_score))
-            print(f"Updated Red Team Score: {self.red_team_score}")
 
             for player_id, name, equip_id in self.red_players:
-                if name == player_name:
+                if name == player_name or name == f"🅱 {player_name}":
                     self.red_player_scores[player_id] += 100
+                    if not name.startswith("🅱"):
+                        name = f"🅱 {name}"
                     label = self.red_player_labels.get(player_id)
-                    if label:
-                        label.setText(f"{player_id} - {name} (Equipment: {equip_id}) Score: {self.red_player_scores[player_id]}")
                     break
+
+            for i, (pid, name, equip_id) in enumerate(self.red_players):
+                if player_name == name or player_name == name.replace("🅱 ", ""):
+                    self.red_player_scores[pid] += 100
+
+                    if not name.startswith("🅱"):
+                        name = f"🅱 {name}"
+                        self.red_players[i] = (pid, name, equip_id)
+
+                    label = self.red_player_labels.get(pid)
+                    if label:
+                        label.setText(f"{pid} - {name} (Equipment: {equip_id}) Score: {self.red_player_scores[pid]}")
+                    break
+                
 
         elif player_name in green_names:
             self.green_team_score += 100
             self.green_team_score_label.setText(str(self.green_team_score))
-            print(f"Updated Green Team Score: {self.green_team_score}")
 
-            # Award 100 points to individual player
             for player_id, name, equip_id in self.green_players:
-                if name == player_name:
+                if name == player_name or name == f"🅱 {player_name}":
                     self.green_player_scores[player_id] += 100
+                    if not name.startswith("🅱"):
+                        name = f"🅱 {name}"
                     label = self.green_player_labels.get(player_id)
-                    if label:
-                        label.setText(f"{player_id} - {name} (Equipment: {equip_id}) Score: {self.green_player_scores[player_id]}")
                     break
+
+            for i, (pid, name, equip_id) in enumerate(self.green_players):
+                if player_name == name or player_name == name.replace("🅱 ", ""):
+                    self.green_player_scores[pid] += 100
+
+                    if not name.startswith("🅱"):
+                        name = f"🅱 {name}"
+                        self.green_players[i] = (pid, name, equip_id)
+
+                    label = self.green_player_labels.get(pid)
+                    if label:
+                        label.setText(f"{pid} - {name} (Equipment: {equip_id}) Score: {self.green_player_scores[pid]}")
+                    break
+
         else:
             print("ERROR: Player not found in either team.")
 
@@ -297,21 +327,6 @@ class PlayActionScreen(QWidget):
             print(f"Unknown attacker with equip ID {attacker_equip_id}")
             return
 
-        if target_equip_id in ("43", "53"):
-            score = 100
-            label_dict = self.red_player_labels if attacker_team == "red" else self.green_player_labels
-            score_dict = self.red_player_scores if attacker_team == "red" else self.green_player_scores
-
-            player_id = attacker[0]
-            name = attacker[1]
-            label = label_dict.get(player_id)
-
-            if label:
-                if not name.startswith("🅱"):
-                    name = f"🅱 {name}"
-                score_dict[player_id] += score
-                label.setText(f"{player_id} - {name} (Equipment: {attacker[2]}) Score: {score_dict[player_id]}")
-            return
 
         if attacker_team and target_team:
             label_dict = self.red_player_labels if attacker_team == "red" else self.green_player_labels
@@ -336,11 +351,9 @@ class PlayActionScreen(QWidget):
             if attacker_team == "red":
                 self.red_team_score += score_change
                 self.red_team_score_label.setText(str(self.red_team_score))
-                print(f"Updated Red Team Score: {self.red_team_score}")
             else:
                 self.green_team_score += score_change
                 self.green_team_score_label.setText(str(self.green_team_score))
-                print(f"Updated Green Team Score: {self.green_team_score}")
 
     def sort_players(self):
         red_sorted = sorted(self.red_players, key=lambda p: self.red_player_scores.get(p[0], 0), reverse=True)
