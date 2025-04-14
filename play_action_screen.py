@@ -186,6 +186,10 @@ class PlayActionScreen(QWidget):
         from player_entry_screen import PlayerEntryScreen  
         self._running = False
         self.game_timer.stop()  # Stop the game timer
+
+        if self.photon_network:
+            self.photon_network.send_stop_signal()
+
         self.close()  
 
         self.player_entry_screen.showMaximized() 
