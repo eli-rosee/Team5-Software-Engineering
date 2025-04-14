@@ -21,7 +21,7 @@ class PhotonNetwork:
 
         # Set up the receive socket
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #self.receive_socket.bind(self.clientAddressPort)
+        self.receive_socket.bind(self.clientAddressPort)
         self.receive_socket.settimeout(1.0)  # 1-second timeout
 
         # Thread control
@@ -34,6 +34,11 @@ class PhotonNetwork:
         message = "202".encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
         #print("202")
+
+    def send_stop_signal(self):
+        """Send the stop signal ("221") to the server."""
+        message = "221".encode()
+        self.broadcast_socket.sendto(message, self.serverAddressPort)
 
     def equipID(self, equip_id):
         """Send the equipment ID to the server."""
