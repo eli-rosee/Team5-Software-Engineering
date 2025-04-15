@@ -38,7 +38,6 @@ class PhotonNetwork:
         while self._running:
             try:
                 data, _ = self.receive_socket.recvfrom(1024)
-                print(f"Received: {data.decode('utf-8')}")
             except socket.timeout:
                 continue
             except OSError as e:
