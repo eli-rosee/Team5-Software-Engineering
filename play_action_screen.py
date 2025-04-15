@@ -187,7 +187,6 @@ class PlayActionScreen(QWidget):
         return f"Unknown({equip_id})"
 
     def handle_external_message(self, message: str):
-        print(message)
         if message == "221":
             self._running = False
             QTimer.singleShot(0, self.return_to_entry_screen)
