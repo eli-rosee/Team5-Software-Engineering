@@ -800,27 +800,26 @@ class PlayerEntryScreen(QWidget):
          popup.close()  # Close the input popup if valid
          self.photon_network.server_ip = new_ip.strip()
          self.photon_network.client_ip = new_ip.strip()
-         print("changed to ", new_ip.strip())
+         print("Changed to", new_ip.strip())
+
          if PlayerEntryScreen.photon_network_instance:
-            print("Closing existing network instance...")
-            PlayerEntryScreen.photon_network_instance.close()
-            
-            time.sleep(1) 
+                print("Closing existing network instance...")
+                PlayerEntryScreen.photon_network_instance.close()
 
          try:
-            server.server_instance.restart_server(new_ip.strip())
-            PlayerEntryScreen.photon_network_instance = PhotonNetwork(
-            server_ip=new_ip, server_port=7500, client_port=7501
-            )
+                server.server_instance.restart_server(new_ip.strip())
 
-            self.photon_network = PlayerEntryScreen.photon_network_instance 
-            print(f"Successfully changed server IP to {new_ip}")
-            self.photon_network.update_ip(new_ip)
+                PlayerEntryScreen.photon_network_instance = PhotonNetwork(
+                    server_ip=new_ip, server_port=7500, client_port=7501
+                )
+
+                self.photon_network = PlayerEntryScreen.photon_network_instance
+                self.photon_network.update_ip(new_ip)
+                
+                print(f"Successfully changed server IP to {new_ip}")
 
          except socket.error as e:
-            print(f"Error binding to new IP {new_ip}: {e}")
-
-         #self.photon_network.update_ip(new_ip.strip())
+                print(f"Error binding to new IP {new_ip}: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
