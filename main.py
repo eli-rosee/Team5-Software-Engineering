@@ -5,6 +5,7 @@ import player_entry_screen
 import countdown
 import play_action_screen
 import time
+import random
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer, QMetaObject, Qt, QObject, pyqtSlot
 from pynput import keyboard
@@ -67,19 +68,37 @@ def on_key_event(key):
         elif key == keyboard.Key.f12:
                 QTimer.singleShot(0, main_window.clear_all_players)
         elif key == keyboard.Key.f5:
-            if splash_window:
-                splash_window.close()
-            else:
-                print("Splash window is already closed or not initialized.")
-            
-            if player_entry_screen_window is not None and player_entry_screen_window.isVisible():
-                QMetaObject.invokeMethod(player_entry_screen_window, "close", Qt.ConnectionType.QueuedConnection)
-            else:
-                print("Splash window is already closed or not initialized.")
+            red_players, green_players = player_entry_screen_window.get_player_data()
+            missing_data = False
 
-            QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
-            time.sleep(30)
-            QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
+            for row in player_entry_screen_window.red_row + player_entry_screen_window.green_row:  
+                player_id = row[3].text().strip()
+                code_name = row[4].text().strip()
+                equip_id = row[5].text().strip()
+
+                if player_id and (not code_name or not equip_id):  
+                    missing_data = True  
+                    break  
+
+            if not red_players or not green_players:
+                player_entry_screen_window.directions.setText("There is an empty team")
+            elif missing_data:
+                player_entry_screen_window.directions.setText("Please fill in all equipment IDs and codenames before starting the game")
+            else:
+                if splash_window:
+                    splash_window.close()
+                else:
+                    print("Splash window is already closed or not initialized.")
+                
+                if player_entry_screen_window is not None and player_entry_screen_window.isVisible():
+                    QMetaObject.invokeMethod(player_entry_screen_window, "close", Qt.ConnectionType.QueuedConnection)
+                else:
+                    print("Splash window is already closed or not initialized.")
+
+                QMetaObject.invokeMethod(countdown_handler, "open_countdown_window", Qt.ConnectionType.QueuedConnection) 
+                time.sleep(30)
+                QMetaObject.invokeMethod(play_action_handler, "open_play_action", Qt.ConnectionType.QueuedConnection)
+                player_entry_screen_window.photon_network.send_start_signal()
 
         elif key == keyboard.Key.esc:
             if main_window and hasattr(main_window, 'timer'):
@@ -98,9 +117,11 @@ def on_key_event(key):
 def start_server_in_thread():
     """ Function to start the server in a separate thread """
     try:
-        server.start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501)
+        server.get_instance().start_server()
+        #server.start_server(server_ip="127.0.0.1", server_port=7500, client_port=7501)
     except Exception as e:
         print(f"Error starting server: {e}")
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -109,8 +130,8 @@ if __name__ == "__main__":
     listener = keyboard.Listener(on_press=on_key_event)
     listener.start()
 
-    #server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
-    #server_thread.start()
+    server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
+    server_thread.start()
 
 
     try:
