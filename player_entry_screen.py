@@ -706,7 +706,7 @@ class PlayerEntryScreen(QWidget):
                 self.countdown_screen = CountdownWindow(self)
                 self.countdown_screen.showFullScreen()
                 QTimer.singleShot(30000, self.finish_countdown)
-                self.photon_network.send_start_signal()
+                QTimer.singleShot(30000, self.photon_network.send_start_signal())
 
                 self.tab_ind = 33
                 QApplication.processEvents()
@@ -816,10 +816,10 @@ class PlayerEntryScreen(QWidget):
                 self.photon_network = PlayerEntryScreen.photon_network_instance
                 self.photon_network.update_ip(new_ip)
                 
-                print(f"✅ Successfully changed server IP to {new_ip}")
+                print(f"Successfully changed server IP to {new_ip}")
 
          except socket.error as e:
-                print(f"❌ Error binding to new IP {new_ip}: {e}")
+                print(f"Error binding to new IP {new_ip}: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
