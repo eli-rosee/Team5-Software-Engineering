@@ -29,6 +29,7 @@
      - sudo apt install tcpdump -y
      - pip install playsound
      - pip3 install pygame
+     - pip install psutil
 
     
   4. Running the application (must be inside project folder)
