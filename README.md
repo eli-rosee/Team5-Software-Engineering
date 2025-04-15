@@ -12,13 +12,8 @@
      - unzip Team-5-Software-Engineering-main.zip
      - mv Team-5-Software-Engineering-main project (rename it for simplicity)
   
-  project directory should look like this: ![image](https://github.com/user-attachments/assets/deffecee-e484-410f-b826-ac0375ac15e9)
+  project directory should look like this: ![image](https://github.com/user-attachments/assets/fe3bb46a-5c49-495c-8af4-2e1790c89edb)
 
-  
-  graphics directory should look like this:                                                                                         
-  ![image](https://github.com/user-attachments/assets/6b49b89c-efde-4bbf-89f3-25672ffc4acc)
-
-    
   3. Install required libraries
      - sudo apt update (password: student)
      - sudo apt install python3-pip -y
