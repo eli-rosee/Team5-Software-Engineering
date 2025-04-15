@@ -3,10 +3,12 @@ from PyQt6.QtCore import Qt, QTimer,QMetaObject,QEvent
 from functools import partial
 import sys
 import time
+import socket
 from pynput import keyboard
 import psycopg2
 from psycopg2 import sql
 from client import PhotonNetwork  
+import server
 from play_action_screen import PlayActionScreen 
 from countdown import CountdownWindow
 
@@ -235,7 +237,7 @@ class PlayerEntryScreen(QWidget):
                     31: "F2",
                     32: "F3",
                     33: "F5 Start Game",
-                    34: "F7",
+                    34: "Change IP",
                     35: "F8",
                     36: "F10",
                     37: "F12 Clear Game"
@@ -427,7 +429,27 @@ class PlayerEntryScreen(QWidget):
         player_id = field.text().strip()
         code_name = field2.text().strip()
         equip_id = field3.text().strip()
-        
+
+        if not player_id:
+            self.directions.setText("Player ID cannot be empty")
+            return None
+
+        try:
+            int_player_id = int(player_id)
+        except ValueError:
+            self.directions.setText("Player ID must be an integer")
+            return None
+
+        if equip_id:
+            try:
+                int_equip_id = int(equip_id)
+            except ValueError:
+                self.directions.setText("Equipment ID must be an integer")
+                return None
+        else:
+            int_equip_id = None  
+
+        # I        
         DB_NAME = "photon"
         DB_HOST = "127.0.0.1"
         DB_PORT = "5432"  
@@ -538,6 +560,7 @@ class PlayerEntryScreen(QWidget):
                 self.count +=1
                 return
         else:
+            self.directions.setText(f"Enter a NEW PLAYER ID:") 
             if hasattr(self, "worker") and self.worker.isRunning():
                 return
 
@@ -663,15 +686,34 @@ class PlayerEntryScreen(QWidget):
             QTimer.singleShot(0, lambda: self.tab_to_target_red(32, 0)) 
         elif index == 33:  # F5
             red_players, green_players = self.get_player_data()
-            self.hide()
-            self.countdown_screen = CountdownWindow(self)
-            self.countdown_screen.showFullScreen()
-            QTimer.singleShot(30000, self.finish_countdown)
+            missing_data = False
 
-            self.tab_ind = 33
-            QApplication.processEvents()
-            QTimer.singleShot(0, lambda: self.tab_to_target_red(33, 0)) 
+            for row in self.red_row + self.green_row:  
+                player_id = row[3].text().strip()
+                code_name = row[4].text().strip()
+                equip_id = row[5].text().strip()
+
+                if player_id and (not code_name or not equip_id):  
+                    missing_data = True  
+                    break  
+
+            if not red_players or not green_players:
+                self.directions.setText("There is an empty team")
+            elif missing_data:
+                self.directions.setText("Please fill in all equipment IDs and codenames before starting the game")
+            else:
+                self.hide()
+                self.countdown_screen = CountdownWindow(self)
+                self.countdown_screen.showFullScreen()
+                QTimer.singleShot(30000, self.finish_countdown)
+                self.photon_network.send_start_signal()
+
+                self.tab_ind = 33
+                QApplication.processEvents()
+                
         elif index == 34:  # F7
+            print("Change IP")
+            self.show_ip_input_dialog()
             for row_index, row in enumerate(self.red_row): 
                     row[1].setStyleSheet("color: black;")
             for row_index, row in enumerate(self.green_row):  
@@ -696,7 +738,88 @@ class PlayerEntryScreen(QWidget):
             self.tab_ind = 36   
             QApplication.processEvents()           
         elif index == 37:  # F12
-            self.clear_all_players()   
+            self.clear_all_players()  
+    
+    def is_valid_ip(self, ip):
+         """Check if the given string is a valid IPv4 address."""
+         try:
+             socket.inet_aton(ip)
+             return True
+         except socket.error:
+             return False
+ 
+     
+    def show_ip_input_dialog(self):
+         """ Show a popup dialog for entering a new server IP. """
+         popup = QDialog(self)
+         popup.setWindowTitle("Change Server IP")
+         popup.setModal(True)
+         popup.setStyleSheet("background-color: black; color: white;")
+         popup.resize(300, 150)
+ 
+         layout = QVBoxLayout()
+ 
+         label = QLabel("Enter new server IP:")
+         layout.addWidget(label)
+ 
+         ip_input = QLineEdit()
+         ip_input.setPlaceholderText("e.g., 192.168.1.10")
+         layout.addWidget(ip_input)
+ 
+         button_layout = QHBoxLayout()
+         confirm_button = QPushButton("Confirm")
+         confirm_button.clicked.connect(lambda: self.update_server_ip(popup, ip_input.text()))
+         button_layout.addWidget(confirm_button)
+ 
+         layout.addLayout(button_layout)
+         popup.setLayout(layout)
+         popup.exec()
+ 
+    def update_server_ip(self, popup, new_ip):
+         new_ip = ".".join(["0"] * (3 - new_ip.count(".")) + new_ip.split("."))
+         if not self.is_valid_ip(new_ip.strip()):
+             print("Invalid IP address entered.")
+             error_popup = QDialog(self)
+             error_popup.setWindowTitle("Error")
+             error_popup.setModal(True)
+             error_popup.setStyleSheet("background-color: black; color: white;")
+             error_popup.resize(250, 100)
+ 
+             layout = QVBoxLayout()
+             error_label = QLabel("Invalid IP Address. Try again.")
+             layout.addWidget(error_label)
+ 
+             close_button = QPushButton("OK")
+             close_button.clicked.connect(error_popup.close)
+             layout.addWidget(close_button)
+ 
+             error_popup.setLayout(layout)
+             error_popup.exec()
+             return  # Stop execution if IP is invalid
+ 
+         popup.close()  # Close the input popup if valid
+         self.photon_network.server_ip = new_ip.strip()
+         self.photon_network.client_ip = new_ip.strip()
+         print("Changed to", new_ip.strip())
+
+         if PlayerEntryScreen.photon_network_instance:
+                print("Closing existing network instance...")
+                PlayerEntryScreen.photon_network_instance.close()
+
+         try:
+                server.server_instance.restart_server(new_ip.strip())
+
+                PlayerEntryScreen.photon_network_instance = PhotonNetwork(
+                    server_ip=new_ip, server_port=7500, client_port=7501
+                )
+
+                self.photon_network = PlayerEntryScreen.photon_network_instance
+                self.photon_network.update_ip(new_ip)
+                
+                print(f"✅ Successfully changed server IP to {new_ip}")
+
+         except socket.error as e:
+                print(f"❌ Error binding to new IP {new_ip}: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
