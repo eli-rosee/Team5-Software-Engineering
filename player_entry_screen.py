@@ -706,7 +706,7 @@ class PlayerEntryScreen(QWidget):
                 self.countdown_screen = CountdownWindow(self)
                 self.countdown_screen.showFullScreen()
                 QTimer.singleShot(30000, self.finish_countdown)
-                QTimer.singleShot(30000, self.photon_network.send_start_signal())
+                QTimer.singleShot(30000, lambda: self.photon_network.send_start_signal())
 
                 self.tab_ind = 33
                 QApplication.processEvents()
