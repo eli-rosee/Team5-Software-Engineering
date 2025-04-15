@@ -2,71 +2,64 @@ import socket
 import threading
 import time
 
-#run server then client
-#works w/ player_entry_screen
-#no need to use trafficgenerator it has the same functionality
 class PhotonNetwork:
-    def __init__(self, server_ip="127.0.0.1", server_port=7500, client_ip="127.0.0.1", client_port=7501):
-        
+    def __init__(self, server_ip="127.0.0.1", server_port=7500, client_port=7501):
+        self.server_ip = server_ip
+        self.server_port = server_port
+        self.client_port = client_port
         self.serverAddressPort = (server_ip, server_port)
-        self.clientAddressPort = (client_ip, client_port)
 
-        # Set up the broadcast socket
         self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-        # Set up the receive socket
         self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.receive_socket.bind(self.clientAddressPort)
-        self.receive_socket.settimeout(1.0)  # 1-second timeout
+        self.receive_socket.settimeout(1)
 
-        # Thread control
         self._running = True
         self.receive_thread = threading.Thread(target=self.listen_for_responses, daemon=True)
         self.receive_thread.start()
 
     def send_start_signal(self):
-        """Send the start signal ("202") to the game software."""
-        message = "202".encode()
-        self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print("Sent start signal: 202")
+        """Send start signal to server on port 7500"""
+        self.broadcast_socket.sendto(b"202", self.serverAddressPort)
+
+    def send_stop_signal(self):
+        """Send stop signal to server"""
+        stop_msg = b"221"
+        for _ in range(3):
+            self.broadcast_socket.sendto(stop_msg, self.serverAddressPort)
 
     def equipID(self, equip_id):
-        """Send the equipment ID to the server."""
+        """Send equipment ID to server (tagged player only)"""
         message = equip_id.encode()
         self.broadcast_socket.sendto(message, self.serverAddressPort)
-        print(f"{equip_id}")
 
     def listen_for_responses(self):
-        """Continuously listen for incoming data on the receive socket."""
+        """Listen for server responses on any source (no bind)"""
         while self._running:
             try:
                 data, _ = self.receive_socket.recvfrom(1024)
-                message = data.decode('utf-8')
-                print(f"Received from game software: {message}")
+                print(f"Received: {data.decode('utf-8')}")
             except socket.timeout:
                 continue
-            except Exception as e:
-                print(f"Error receiving data: {e}")
+            except OSError as e:
+                if not self._running:
+                    break  # Graceful exit
+                print(f"Receive error: {e}")
                 break
 
     def close(self):
-        """Close both UDP sockets and stop the receive thread."""
         self._running = False
-        self.broadcast_socket.close()
-        self.receive_socket.close()
-        print("Photon network connections closed.")
 
-# Example usage
-if __name__ == "__main__":
-    # Start the client
-    server_ip = input("Enter server IP (default is 127.0.0.1): ") or "127.0.0.1"
-    photon_network = PhotonNetwork(server_ip=server_ip)
+        if self.broadcast_socket:
+            self.broadcast_socket.close()
+            self.broadcast_socket = None
 
-    try:
-        # Send the start signal to the game software
-        photon_network.send_start_signal()
-        time.sleep(1)  # Wait for the game software to be ready
+        if self.receive_socket:
+            self.receive_socket.close()
+            self.receive_socket = None
 
-    except KeyboardInterrupt:
-        photon_network.close()
-        print("Photon network terminated.")
+        print("Closed PhotonNetwork sockets.")
+
+    def update_ip(self, new_ip):
+        self.server_ip = new_ip.strip()
+        self.serverAddressPort = (self.server_ip, self.server_port)
