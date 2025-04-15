@@ -1,56 +1,95 @@
 import socket
 import threading
 
-def start_server(server_ip="0.0.0.0", server_port=7500, client_port=7501):
-    """Start the UDP server."""
-    buffer_size = 1024
+class Server:
+    def __init__(self, server_ip="127.0.0.1"):
+        self.server_ip = server_ip
+        self.receive_port = 7501  
+        self.broadcast_port = 7500 
+        self.running = False
+        self.receive_socket = None
+        self.broadcast_socket = None
+        self.thread = None
 
-   #let user specifiy network at runtime.
-    if server_ip == "0.0.0.0":
-        print("Available network interfaces:")
-        hostname = socket.gethostname()
-        ips = socket.gethostbyname_ex(hostname)[2]
-        for idx, ip in enumerate(ips):
-            print(f"{idx + 1}: {ip}")
-        
-        choice = input("Select network interface (enter number or type ip address(127.0.0.1)): ")
-        if choice in ips or choice == "127.0.0.1":
-            server_ip = choice
-        else:
-            try:
-                server_ip = ips[int(choice) - 1]
-            except (IndexError, ValueError):
-                print("Invalid selection. Default 127.0.0.1")
-                server_ip = "127.0.0.1"
+    def start_server(self):
+        self.running = True
+        buffer_size = 1024
 
-    # Create a UDP socket
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_socket.bind((server_ip, server_port))
+        self.receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.receive_socket.bind((self.server_ip, self.receive_port))
+        self.receive_socket.settimeout(1.0) 
 
-    print(f"Server listening on {server_ip}:{server_port}")
+        self.broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    while True:
-        # Receive data from the client
-        data, client_address = server_socket.recvfrom(buffer_size)
-        message = data.decode('utf-8')
-        print(f"Received from client: {message}")
+        print(f"Server listening on {self.server_ip}:{self.receive_port}")
 
-        if message == "202":
-            # Start signal, no need to handle equip ID
-            response = "202"
-        else:
-            # Assume the message is an equipment ID
-            response = f"ACK:{message}"
+        try:
+            while self.running:
+                try:
+                    data, client_address = self.receive_socket.recvfrom(buffer_size)
+                    message = data.decode('utf-8')
+                    print(f"Received: {message} from {client_address}")
 
-        # Send the response back to the client
-        server_socket.sendto(response.encode('utf-8'), (client_address[0], client_port))
-        print(f"Sent response to client: {response}")
+                    if ":" in message:
+                        parts = message.split(":")
+                        if len(parts) == 2:
+                            attacker, code = parts
+                            if code in ("43", "53"):
+                                response = attacker
+                            else:
+                                response = code
+                        else:
+                            response = message
+                    else:
+                        response = message
 
-# Example usage
+                    self.broadcast_socket.sendto(response.encode('utf-8'), (self.server_ip, self.broadcast_port))
+                except socket.timeout:
+                    continue  # keep server alive if no data received
+        except Exception as e:
+            print(f"Server error: {e}")
+        finally:
+            self.stop_server()
+
+    def stop_server(self):
+        self.running = False
+        if self.receive_socket:
+            self.receive_socket.close()
+            self.receive_socket = None
+        if self.broadcast_socket:
+            self.broadcast_socket.close()
+            self.broadcast_socket = None
+        print("Server stopped.")
+
+
+    def run_in_thread(self):
+        self.thread = threading.Thread(target=self.start_server, daemon=True)
+        self.thread.start()
+
+    def restart_server(self, new_ip):
+        self.stop_server()  # Clean up old sockets
+        self.server_ip = new_ip.strip()
+        self.run_in_thread()
+
+
+def start_server_in_thread():
+    """ Function to start the server in a separate thread """
+    try:
+        server_instance.start_server()
+    except Exception as e:
+        print(f"Error starting server: {e}")
+
+server_instance = Server()
+def get_instance():
+    return server_instance
 if __name__ == "__main__":
-    # Start the server in a separate thread
-    server_thread = threading.Thread(target=start_server, daemon=True)
+
+    server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
     server_thread.start()
 
-    # Keep the main thread alive to keep the server running
-    server_thread.join()
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        server_instance.stop_server()
