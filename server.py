@@ -1,5 +1,6 @@
 import socket
 import threading
+from play_action_screen import server_bridge
 
 class Server:
     def __init__(self, server_ip="127.0.0.1"):
@@ -29,7 +30,7 @@ class Server:
                 try:
                     data, client_address = self.receive_socket.recvfrom(buffer_size)
                     message = data.decode('utf-8')
-                    print(f"Received: {message} from {client_address}")
+                    server_bridge.message_received.emit(message)
 
                     if ":" in message:
                         parts = message.split(":")
