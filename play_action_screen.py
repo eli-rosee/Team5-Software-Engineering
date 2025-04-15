@@ -1,9 +1,38 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QPushButton, QApplication
-from PyQt6.QtCore import QTimer, Qt, pyqtSignal
+from PyQt6.QtCore import QTimer, Qt, pyqtSignal, QObject
+import psutil
 import sys
+import socket
 import random
 import threading
 import time
+import os
+
+class ServerBridge(QObject):
+    message_received = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+
+server_bridge = ServerBridge()
+
+def is_traffic_generator_running(script_name="python_trafficgenarator_v2.py"):
+    for proc in psutil.process_iter(['pid', 'cmdline']):
+            try:
+                cmdline = proc.info['cmdline']
+                if not cmdline:
+                    continue
+
+                if 'nano' in cmdline[0] or 'vim' in cmdline[0] or 'code' in cmdline[0]:
+                    continue
+
+                for arg in cmdline:
+                    if script_name in arg:
+                        return True
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+    return False
 
 class PlayActionScreen(QWidget):
     action_signal = pyqtSignal(str)
@@ -21,6 +50,7 @@ class PlayActionScreen(QWidget):
         self.flash_timer.timeout.connect(self.flash_high_team_score)
         self.flash_state = True
         self.flash_timer.start(500)
+        server_bridge.message_received.connect(self.handle_external_message)
         self.setWindowTitle("Play Action Screen")
         self.showMaximized()
         self.setStyleSheet("background-color: black; color: white;")
@@ -143,8 +173,37 @@ class PlayActionScreen(QWidget):
 
         # Start traffic generator
         self._running = True
-        self.traffic_thread = threading.Thread(target=self.generate_traffic, daemon=True)
+        if is_traffic_generator_running():
+            self.traffic_thread = threading.Thread(target=self.read_generate_traffic, daemon=True)
+        else:
+            self.traffic_thread = threading.Thread(target=self.generate_traffic, daemon=True)
         self.traffic_thread.start()
+        #self.traffic_thread.start()
+
+    def get_name_from_equip_id(self, equip_id: str) -> str:
+        for _, name, eid in self.red_players + self.green_players:
+            if eid == equip_id:
+                return name
+        return f"Unknown({equip_id})"
+
+    def handle_external_message(self, message: str):
+        print(message)
+        if message == "221":
+            self._running = False
+            QTimer.singleShot(0, self.return_to_entry_screen)
+        elif ":" in message:
+            attacker_equip_id, target_or_code = message.split(":")
+            attacker_name = self.get_name_from_equip_id(attacker_equip_id)
+
+            if target_or_code in ("43", "53"):
+                base_hit_text = f"{attacker_name} hit the base!"
+                self.action_signal.emit(f"<div style='text-align: center;'>{base_hit_text}</div>")
+                self.team_score_signal.emit(base_hit_text)
+            else:
+                target_name = self.get_name_from_equip_id(target_or_code)
+                action = f"{attacker_name} hit {target_name}"
+                self.action_signal.emit(f"<div style='text-align: center;'>{action}</div>")
+                self.score_signal.emit(attacker_equip_id, target_or_code)
 
     def update_game_timer(self):
         """Update the game timer display every second."""
@@ -162,7 +221,51 @@ class PlayActionScreen(QWidget):
             minutes = self.game_time_remaining // 60
             seconds = self.game_time_remaining % 60
             self.game_timer_label.setText(f"{minutes:02d}:{seconds:02d}")
+
     
+    def read_generate_traffic(self):
+        buffer_size = 1024
+        listen_ip = self.photon_network.server_ip if self.photon_network else "127.0.0.1"
+        listen_port = 7501
+
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.settimeout(1.0)  # Avoid blocking forever
+
+            while self._running and self.game_time_remaining > 0:
+                try:
+                    data, _ = sock.recvfrom(buffer_size)
+                    message = data.decode('utf-8').strip()
+
+                    if message == "221":
+                        print("Received end-of-game signal.")
+                        self._running = False
+                        QTimer.singleShot(0, self.return_to_entry_screen)
+                        break
+
+                    if ":" in message:
+                        attacker_id, target_or_code = message.split(":")
+
+                        if target_or_code in ("43", "53"):
+                            base_hit_text = f"Player {attacker_id} hit the base!"
+                            self.action_signal.emit(f"<div style='text-align: center;'>{base_hit_text}</div>")
+                            self.team_score_signal.emit(base_hit_text)
+                        else:
+                            self.score_signal.emit(attacker_id, target_or_code)
+                            action = f"Player {attacker_id} hit Player {target_or_code}"
+                            self.action_signal.emit(f"<div style='text-align: center;'>{action}</div>")
+                    else:
+                        print(f"Received unknown message: {message}")
+
+                except socket.timeout:
+                    continue
+                except Exception as e:
+                    print(f"UDP receive error: {e}")
+                    break
+        finally:
+            sock.close()
+
+
     def generate_traffic(self):
         """Simulate game traffic and update the current game action."""
         counter = 0
@@ -228,11 +331,11 @@ class PlayActionScreen(QWidget):
                         to_transmit = target_id
  
 
-                if self.photon_network:
+                #if self.photon_network:
                     #self.photon_network.equipID(to_transmit)
-                    print("test")
-                else:
-                    print(f"Skipping network broadcast: {to_transmit}")
+                    #print("test")
+               # else:
+                   # print(f"Skipping network broadcast: {to_transmit}")
 
                 counter += 1
                 time.sleep(random.randint(1, 3))  
@@ -275,8 +378,6 @@ class PlayActionScreen(QWidget):
 
             for i, (pid, name, equip_id) in enumerate(self.red_players):
                 if player_name == name or player_name == name.replace("🅱 ", ""):
-                    self.red_player_scores[pid] += 100
-
                     if not name.startswith("🅱"):
                         name = f"🅱 {name}"
                         self.red_players[i] = (pid, name, equip_id)
@@ -301,7 +402,6 @@ class PlayActionScreen(QWidget):
 
             for i, (pid, name, equip_id) in enumerate(self.green_players):
                 if player_name == name or player_name == name.replace("🅱 ", ""):
-                    self.green_player_scores[pid] += 100
 
                     if not name.startswith("🅱"):
                         name = f"🅱 {name}"
