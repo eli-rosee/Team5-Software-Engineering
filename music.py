@@ -34,6 +34,7 @@ class MusicPlayer:
                         pygame.mixer.music.stop()
                         return
                     time.sleep(0.1)
+            self.playing = False
         threading.Thread(target=play_loop, daemon=True).start()
 
     def stop_music(self):
