@@ -52,7 +52,7 @@
      - If a player hits a base, they get a B beside their name and 100 points for thier team and their individual score
      - If it is a normal hit, the player gets 10 points for thier team and individual score (-10 to the attacker if they are on the same team)
      - The middle of the screen shows the all of the game actions (what player hit who)
-     - The game will last 6 minutes long, and then return to the player entry screen (server broadcasts 221 to client)
+     - The game will last 6 minutes long, and then ends the game (server broadcasts 221 to client)
      - You can return to the player entry screen as well by clicking the "Return to Player Entry Screen" button (server sends 221 to client)
      - Clicking the button "Change IP" allows you to change the IP address
          - (if you do this, make sure to change these 2 lines in your traffic_generator.py)
