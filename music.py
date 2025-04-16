@@ -24,12 +24,11 @@ class MusicPlayer:
             return
         def play_loop():
             self.playing = True
-            while self.playing:
-                track = random.choice(self.tracks)
-                print(f"Now playing: {track}")
-                pygame.mixer.music.load(track)
-                pygame.mixer.music.play()
-                while pygame.mixer.music.get_busy():
+            track = random.choice(self.tracks)
+            print(f"Now playing: {track}")
+            pygame.mixer.music.load(track)
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
                     if not self.playing:
                         pygame.mixer.music.stop()
                         return
