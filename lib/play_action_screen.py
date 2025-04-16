@@ -1,20 +1,17 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QPushButton, QApplication
-from PyQt6.QtCore import QTimer, Qt, pyqtSignal
+from PyQt6.QtCore import QTimer, Qt
 import sys
-import random
-import threading
-import time
+from music import music_player
+import socket
+
+from database import Database
 
 class PlayActionScreen(QWidget):
-    action_signal = pyqtSignal(str)
-    score_signal = pyqtSignal(str, str)  
-    team_score_signal = pyqtSignal(str)
+    def __init__(self, ip_address, red_players, green_players, on_exit):
+        super().__init__()
 
-    def __init__(self, red_players, green_players, photon_network, player_entry_screen_instance, parent=None):
-        super().__init__(parent)
-        self.action_signal.connect(self.append_to_current_action)
-        self.score_signal.connect(self.change_player_score)
-        self.team_score_signal.connect(self.change_team_score)
+        self._running = True
+
         self.red_player_scores = {player_id: 0 for player_id, _, _ in red_players}
         self.green_player_scores = {player_id: 0 for player_id, _, _ in green_players}
         self.flash_timer = QTimer(self)
@@ -22,15 +19,18 @@ class PlayActionScreen(QWidget):
         self.flash_state = True
         self.flash_timer.start(500)
         self.setWindowTitle("Play Action Screen")
-        self.showMaximized()
         self.setStyleSheet("background-color: black; color: white;")
         
+        # Store server information and extra args
+        self.bufferSize  = 1024
+        self.ip_address = ip_address
+        self.serverAddressPort = (ip_address, 7500)
+        self.clientAddressPort = (ip_address, 7501)
+        self.exit = on_exit
 
         # Store players with their equipment IDs
         self.red_players = red_players
         self.green_players = green_players
-        self.photon_network = photon_network
-        self.player_entry_screen = player_entry_screen_instance 
 
         self.red_player_labels = {}
         self.green_player_labels = {}
@@ -51,7 +51,9 @@ class PlayActionScreen(QWidget):
         self.red_team_score = 0
 
         self.red_player_layout = QVBoxLayout()
+
         red_players_count = len(red_players)
+
         for i, (player_id, player_name, equip_id) in enumerate(red_players):
             score = 0
 
@@ -94,7 +96,7 @@ class PlayActionScreen(QWidget):
 
         return_button = QPushButton("Return to Player Entry Screen")
         return_button.setStyleSheet("background-color: white; color: black;")
-        return_button.clicked.connect(self.return_to_entry_screen)
+        return_button.clicked.connect(self.exit)
         current_action_layout.addWidget(return_button)
 
         main_layout.addLayout(current_action_layout, stretch=1)
@@ -113,6 +115,7 @@ class PlayActionScreen(QWidget):
         self.green_team_score = 0
 
         self.green_player_layout = QVBoxLayout()
+
         green_players_count = len(green_players)
         for i, (player_id, player_name, equip_id) in enumerate(green_players):
             score = 0
@@ -140,11 +143,24 @@ class PlayActionScreen(QWidget):
         self.game_timer = QTimer(self)
         self.game_timer.timeout.connect(self.update_game_timer)
         self.game_timer.start(1000)  # Update every second
+    
+        # Create datagram sockets
+        self.UDPClientSocketReceive = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.UDPServerSocketTransmit = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-        # Start traffic generator
-        self._running = True
-        self.traffic_thread = threading.Thread(target=self.generate_traffic, daemon=True)
-        self.traffic_thread.start()
+        self.UDPClientSocketReceive.bind(self.clientAddressPort)
+        self.UDPClientSocketReceive.setblocking(False)
+
+        self.server_timer = QTimer(self)
+        self.server_timer.timeout.connect(self.server_listener)
+
+        self.server_timer.start(100)
+        self.game_timer.start(1000)
+
+        self.UDPServerSocketTransmit.sendto(str.encode(str(202)), self.serverAddressPort)
+
+        self.showMaximized()
+
 
     def update_game_timer(self):
         """Update the game timer display every second."""
@@ -152,75 +168,104 @@ class PlayActionScreen(QWidget):
         
         if self.game_time_remaining <= 0:
             self.game_timer.stop()
+
+            for i in range(3):
+                self.UDPServerSocketTransmit.sendto(str.encode(str(221)), self.serverAddressPort)
+                self._running = False
+
             self.game_timer_label.setText("00:00")
             self.append_to_current_action("<div style='text-align: center; color: red;'>GAME OVER!</div>")
-            # Stop traffic generator
-            self._running = False
-            # Return to player entry screen after brief delay
-            QTimer.singleShot(2000, self.return_to_entry_screen)
+
         else:
             minutes = self.game_time_remaining // 60
             seconds = self.game_time_remaining % 60
             self.game_timer_label.setText(f"{minutes:02d}:{seconds:02d}")
-    
-    def generate_traffic(self):
-        """Simulate game traffic and update the current game action."""
-        counter = 0
-        while self._running and self.game_time_remaining > 0:  # Stop traffic when game ends
-            if len(self.red_players) >= 1 and len(self.green_players) >= 1:  
-                red_player = random.choice(self.red_players)
-                green_player = random.choice(self.green_players)
 
-                red_equip_id = red_player[2] 
-                green_equip_id = green_player[2]  
+    def server_listener(self):
+        try:
+            raw_data = self.UDPClientSocketReceive.recvfrom(self.bufferSize)
+            raw_player_data = raw_data[0]
+            player_data = raw_player_data.decode('utf-8')
+            if ':' in player_data:
+                self.handle_external_message(player_data)
+                print(f'Recieved from Client: {player_data}')
 
-                # Simulate interactions between players
-                if random.randint(1, 2) == 1:
-                    action_text = f"{red_player[1]} hit {green_player[1]}"
-                    equipment_code = f"{red_equip_id}:{green_equip_id}"
-                    equip_parts = equipment_code.split(":")
-                    if len(equip_parts) == 2:
-                        attacker_id, target_id = equip_parts
-                        self.score_signal.emit(attacker_id, target_id)
+        except BlockingIOError:
+            pass
+
+    def get_name_from_equip_id(self, equip_id: str) -> str:
+        for _, name, eid in self.red_players + self.green_players:
+            if eid == equip_id:
+                return name
+        return f"Unknown({equip_id})"
+
+    def handle_external_message(self, message: str):
+            attacker_equip_id, target_or_code = message.split(":")
+            attacker_name = self.get_name_from_equip_id(attacker_equip_id)
+            if(self._running):
+                if target_or_code in ("43", "53"):
+                    base_hit_text = f"{attacker_name} hit the base!"
+                    self.append_to_current_action(f"<div style='text-align: center;'>{base_hit_text}</div>")
+                    self.change_team_score(base_hit_text)
+                    self.UDPServerSocketTransmit.sendto(str.encode(str(attacker_equip_id)), self.serverAddressPort)
                 else:
-                    action_text = f"{green_player[1]} hit {red_player[1]}"
-                    equipment_code = f"{green_equip_id}:{red_equip_id}"
-                    equip_parts = equipment_code.split(":")
-                    if len(equip_parts) == 2:
-                        attacker_id, target_id = equip_parts
-                        self.score_signal.emit(attacker_id, target_id)
+                    target_name = self.get_name_from_equip_id(target_or_code)
+                    action = f"{attacker_name} hit {target_name}"
+                    self.append_to_current_action(f"<div style='text-align: center;'>{action}</div>")
+                    self.change_player_score(attacker_equip_id, target_or_code)
 
-                centered_text = f"<div style='text-align: center;'>{action_text}</div>"
-                self.action_signal.emit(centered_text)
+    def change_player_score(self, attacker_equip_id, target_equip_id):
+        attacker = None
+        target = None
+        attacker_team = None
+        target_team = None
+
+        for player in self.red_players:
+            if player[2] == attacker_equip_id:
+                attacker = player
+                attacker_team = "red"
+        for player in self.green_players:
+            if player[2] == attacker_equip_id:
+                attacker = player
+                attacker_team = "green"
+        for player in self.red_players + self.green_players:
+            if player[2] == target_equip_id:
+                target = player
+                target_team = "red" if player in self.red_players else "green"
+
+        if not attacker:
+            print(f"Unknown attacker with equip ID {attacker_equip_id}")
+            return
 
 
-                if self.photon_network:
-                    self.photon_network.equipID(equipment_code)  # Broadcast equipment code to server
-                else:
-                    print(f"Skipping network broadcast: {equipment_code}")  
+        if attacker_team and target_team:
+            label_dict = self.red_player_labels if attacker_team == "red" else self.green_player_labels
+            score_dict = self.red_player_scores if attacker_team == "red" else self.green_player_scores
 
-                # Simulate base hits after specific iterations
-                if counter == 10:
-                    base_hit_text = f"{red_player[1]} hit the base!"
-                    centered_base_hit_text = f"<div style='text-align: center;'>{base_hit_text}</div>"
-                    self.action_signal.emit(centered_base_hit_text)
-                    self.team_score_signal.emit(base_hit_text)
-                    if self.photon_network:
-                        self.photon_network.equipID(f"{red_equip_id}:43")  # Red team base hit
-                    else:
-                        print(f"Skipping network broadcast: {equipment_code}")  
-                elif counter == 20:
-                    base_hit_text = f"{green_player[1]} hit the base!"
-                    centered_base_hit_text = f"<div style='text-align: center;'>{base_hit_text}</div>"
-                    self.action_signal.emit(centered_base_hit_text)
-                    self.team_score_signal.emit(base_hit_text)
-                    if self.photon_network:
-                        self.photon_network.equipID(f"{red_equip_id}:53")  # Red team base hit
-                    else:
-                        print(f"Skipping network broadcast: {equipment_code}")  
+            player_id = attacker[0]
+            name = attacker[1]
+            label = label_dict.get(player_id)
 
-                counter += 1
-                time.sleep(random.randint(1, 3))  
+            if attacker_team == target_team:
+                score_change = -10
+                self.UDPServerSocketTransmit.sendto(str.encode(str(attacker_equip_id)), self.serverAddressPort)
+            else:
+                score_change = 10
+                self.UDPServerSocketTransmit.sendto(str.encode(str(target_equip_id)), self.serverAddressPort)  
+
+            score_dict[player_id] += score_change
+
+            self.sort_players()
+
+            if label:
+                label.setText(f"{player_id} - {name} (Equipment: {attacker[2]}) Score: {score_dict[player_id]}")
+
+            if attacker_team == "red":
+                self.red_team_score += score_change
+                self.red_team_score_label.setText(str(self.red_team_score))
+            else:
+                self.green_team_score += score_change
+                self.green_team_score_label.setText(str(self.green_team_score))
 
     def closeEvent(self, event):
         from music import music_player
@@ -260,8 +305,6 @@ class PlayActionScreen(QWidget):
 
             for i, (pid, name, equip_id) in enumerate(self.red_players):
                 if player_name == name or player_name == name.replace("🅱 ", ""):
-                    self.red_player_scores[pid] += 100
-
                     if not name.startswith("🅱"):
                         name = f"🅱 {name}"
                         self.red_players[i] = (pid, name, equip_id)
@@ -286,7 +329,6 @@ class PlayActionScreen(QWidget):
 
             for i, (pid, name, equip_id) in enumerate(self.green_players):
                 if player_name == name or player_name == name.replace("🅱 ", ""):
-                    self.green_player_scores[pid] += 100
 
                     if not name.startswith("🅱"):
                         name = f"🅱 {name}"
@@ -299,61 +341,12 @@ class PlayActionScreen(QWidget):
 
         else:
             print("ERROR: Player not found in either team.")
-
-        self.sort_players()
-
-               
-
-    def change_player_score(self, attacker_equip_id, target_equip_id):
-        attacker = None
-        target = None
-        attacker_team = None
-        target_team = None
-
-        for player in self.red_players:
-            if player[2] == attacker_equip_id:
-                attacker = player
-                attacker_team = "red"
-        for player in self.green_players:
-            if player[2] == attacker_equip_id:
-                attacker = player
-                attacker_team = "green"
-        for player in self.red_players + self.green_players:
-            if player[2] == target_equip_id:
-                target = player
-                target_team = "red" if player in self.red_players else "green"
-
-        if not attacker:
-            print(f"Unknown attacker with equip ID {attacker_equip_id}")
+            self.sort_players()
             return
 
+        
+        self.sort_players()
 
-        if attacker_team and target_team:
-            label_dict = self.red_player_labels if attacker_team == "red" else self.green_player_labels
-            score_dict = self.red_player_scores if attacker_team == "red" else self.green_player_scores
-
-            player_id = attacker[0]
-            name = attacker[1]
-            label = label_dict.get(player_id)
-
-            if attacker_team == target_team:
-                score_change = -10  
-            else:
-                score_change = 10   
-
-            score_dict[player_id] += score_change
-
-            self.sort_players()
-
-            if label:
-                label.setText(f"{player_id} - {name} (Equipment: {attacker[2]}) Score: {score_dict[player_id]}")
-
-            if attacker_team == "red":
-                self.red_team_score += score_change
-                self.red_team_score_label.setText(str(self.red_team_score))
-            else:
-                self.green_team_score += score_change
-                self.green_team_score_label.setText(str(self.green_team_score))
 
     def sort_players(self):
         red_sorted = sorted(self.red_players, key=lambda p: self.red_player_scores.get(p[0], 0), reverse=True)
@@ -391,22 +384,6 @@ class PlayActionScreen(QWidget):
             self.green_team_score_label.setStyleSheet("font-size: 50px; font-weight: bold; color: green;")
         
         self.flash_state = not self.flash_state
-
-
-
-    def return_to_entry_screen(self):
-        """Stop the traffic generator and return to the player entry screen."""
-        from player_entry_screen import PlayerEntryScreen  
-        self._running = False
-        self.game_timer.stop()  # Stop the game timer
-
-        if self.photon_network:
-            self.photon_network.send_stop_signal()
-
-        self.close()  
-
-        self.player_entry_screen.showMaximized() 
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
