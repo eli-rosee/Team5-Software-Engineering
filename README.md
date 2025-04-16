@@ -27,7 +27,7 @@
      - python3 main.py
     
   5. Test running the generator (you can use a different terminal window and must be inside project folder)
-     - python3 python_trafficgenarator_v2.py
+     - python3 traffic_generator.py 
 
   6. What happens in main.py?
      - First 3 seconds is the loading screen
@@ -47,7 +47,7 @@
      - Once that timer is done, it will start the game and open the play action screen (server broadcasts 202 to the client)
      - While the game is playing, music will be in the background playing as well
      - The game timer will count down every second.
-     - Red team scores, green team scores, and individual scores will be updated by client (python_trafficgenarator_v2.py)
+     - Red team scores, green team scores, and individual scores will be updated by client (traffic_generator.py )
      - THe highest scoring team will be blinking
      - If a player hits a base, they get a B beside their name and 100 points for thier team and their individual score
      - If it is a normal hit, the player gets 10 points for thier team and individual score (-10 to the attacker if they are on the same team)
@@ -55,7 +55,7 @@
      - The game will last 6 minutes long, and then return to the player entry screen (server broadcasts 221 to client)
      - You can return to the player entry screen as well by clicking the "Return to Player Entry Screen" button (server sends 221 to client)
      - Clicking the button "Change IP" allows you to change the IP address
-         - (if you do this, make sure to change these 2 lines in your python_trafficgenarator_v2.py)
+         - (if you do this, make sure to change these 2 lines in your traffic_generator.py)
          - serverAddressPort   = ("127.0.0.1", 7500) 
          - clientAddressPort   = ("127.0.0.1", 7501) to the ip you changed in the game
    
