@@ -21,7 +21,6 @@
      - sudo apt install tcpdump -y
      - pip install playsound
      - pip3 install pygame
-
     
   4. Running the application (must be inside project folder)
      - python3 main.py
@@ -38,7 +37,8 @@
      - If the player id is not in the database, you must enter it yourself 
      - Again, you can press enter to confirm the codename
      - Lastly, you must insert and confirm the equipment id (equipment id must be a number)
-     - Pressing enter, will then add the player completely (broadcasts equipment id) and moves the user to the next player to enter 
+     - Pressing enter, will then add the player completely (broadcasts equipment id) and moves the user to the next player to enter
+     - If equipment ID feild is missing, the player will not be added to the game
      - If you want to to move sides or to a specific textbox, you can click the text box with your cursor
      - You can clear all players from the game by clicking the button "f12 Clear Game" or by pressing f12
      - After you have enteted all players that you want, you can click f5 or the button labeled "f5 Start Game" to start the game
