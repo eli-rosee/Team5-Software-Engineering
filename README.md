@@ -42,7 +42,7 @@
      - If you want to to move sides or to a specific textbox, you can click the text box with your cursor
      - You can clear all players from the game by clicking the button "f12 Clear Game" or by pressing f12
      - After you have enteted all players that you want, you can click f5 or the button labeled "f5 Start Game" to start the game
-     - You can only enter the game if all players have a equipment id linked to their player and there must be at least one player on eash side
+     - You can only enter the game if at least one player ia on each side
      - After starting the game, a 30 second timer will start 
      - Once that timer is done, it will start the game and open the play action screen (server broadcasts 202 to the client)
      - While the game is playing, music will be in the background playing as well
