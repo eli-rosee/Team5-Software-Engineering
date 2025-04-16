@@ -11,8 +11,6 @@
      - cd ..
      - unzip Team-5-Software-Engineering-main.zip
      - mv Team-5-Software-Engineering-main project (rename it for simplicity)
-  
-  project directory should look like this: ![image](https://github.com/user-attachments/assets/fe3bb46a-5c49-495c-8af4-2e1790c89edb)
 
   3. Install required libraries
      - sudo apt update (password: student)
