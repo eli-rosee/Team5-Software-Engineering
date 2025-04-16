@@ -215,7 +215,6 @@ class PlayActionScreen(QWidget):
             # Stop traffic generator
             self._running = False
             # Return to player entry screen after brief delay
-            QTimer.singleShot(2000, self.return_to_entry_screen)
         else:
             minutes = self.game_time_remaining // 60
             seconds = self.game_time_remaining % 60
@@ -235,12 +234,6 @@ class PlayActionScreen(QWidget):
                 try:
                     data, _ = sock.recvfrom(buffer_size)
                     message = data.decode('utf-8').strip()
-
-                    if message == "221":
-                        print("Received end-of-game signal.")
-                        self._running = False
-                        QTimer.singleShot(0, self.return_to_entry_screen)
-                        break
 
                     if ":" in message:
                         attacker_id, target_or_code = message.split(":")
