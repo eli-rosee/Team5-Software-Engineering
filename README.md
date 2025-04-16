@@ -55,7 +55,7 @@
      - The game will last 6 minutes long, and then ends the game (server broadcasts 221 to client)
      - You can return to the player entry screen as well by clicking the "Return to Player Entry Screen" button (server sends 221 to client)
      - Clicking the button "Change IP" allows you to change the IP address
-         - (if you do this, make sure to change these 2 lines in your traffic_generator.py get changed to the new ip you changed to in game
+         - (if you do this, make sure to change these 2 lines in your traffic_generator.py get changed to the new ip you changed to in the game)
          - serverAddressPort   = ("127.0.0.1", 7500) 
          - clientAddressPort   = ("127.0.0.1", 7501) 
    
