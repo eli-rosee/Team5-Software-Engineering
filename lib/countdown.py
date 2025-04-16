@@ -1,16 +1,21 @@
 from PyQt6.QtWidgets import QMainWindow, QLabel, QApplication
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import QTimer, pyqtSignal
+from PyQt6.QtCore import QTimer
 import sys
 import os
 
+from music import music_player
+
 class CountdownWindow(QMainWindow):
-    countdown_finished = pyqtSignal()
-    def __init__(self, parent=None):
+    def __init__(self, on_exit):
         super().__init__()
+
+        self.on_exit = on_exit
+        self.time_interval = 1400
 
         self.setGeometry(700, 300, 500, 500)
         self.setStyleSheet("background-color: black;")
+        self.setWindowTitle("Countdown")
 
         self.background_label = QLabel(self)
         self.background_label.setScaledContents(True)
@@ -22,30 +27,6 @@ class CountdownWindow(QMainWindow):
 
         self.showMaximized()  
 
-        self.show_logo()
-
-    def force_close(self):
-        """Closes the countdown window and exits the application."""
-        self.close()
-
-    def show_logo(self):
-        """Displays the logo before the countdown starts."""
-        logo_path = "graphics/countdown_images/30.tif"
-        if os.path.exists(logo_path):
-            self.countdown_label.setPixmap(QPixmap(logo_path))
-        else:
-            print("Warning: Logo not found.")
-
-        QTimer.singleShot(0, self.setup_background)
-
-    def setup_background(self):
-        """Sets the background image before starting the countdown."""
-        background_path = "graphics/countdown_images/30.tif"
-        if os.path.exists(background_path):
-            self.background_label.setPixmap(QPixmap(background_path))
-        else:
-            print("Warning: Background image not found.")
-
         self.start_countdown()
 
     def start_countdown(self):
@@ -53,35 +34,29 @@ class CountdownWindow(QMainWindow):
         self.countdown_time = 30  
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_countdown)
-        self.update_image()
-        self.timer.start(1000)  
+        self.timer.start(self.time_interval)  
 
     def update_countdown(self):
         """Updates the countdown image every second."""
-        self.countdown_time -= 1
 
-        if (self.countdown_time == 17):
-            from music import music_player
-            music_player.play_random_music()  
+        if (self.countdown_time == 12):
+            music_player.play_random_music()
 
         if self.countdown_time >= 0:
             self.update_image()
         else:
             self.timer.stop()
-            self.show_final_image()  
+            QTimer.singleShot(1000, self.on_exit)
+        
+        self.countdown_time -= 1
 
     def update_image(self):
         """Loads and displays the appropriate countdown image, with alert effect in the last 3 seconds."""
-        image_path = f"graphics/countdown_images/{self.countdown_time}.tif"
+        image_path = f"assets/images/{self.countdown_time}.tif"
         if os.path.exists(image_path):
             self.countdown_label.setPixmap(QPixmap(image_path))
         else:
             print(f"Warning: {image_path} not found.")  
-
-    def show_final_image(self):
-        """Displays the final 'countdown_0.tif' before transitioning."""
-        final_image_path = "graphics/countdown_images/countdown_0.tif"
-        QTimer.singleShot(1000, self.force_close)
 
     def resizeEvent(self, event):
         """Ensures the images resize with the window."""
@@ -94,6 +69,10 @@ class CountdownWindow(QMainWindow):
         import play_action_screen  
         self.next_screen = play_action_screen.PlayActionScreen()
         self.next_screen.showMaximized()
+    
+    def countdown_loop(self):
+        self.show_logo()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
