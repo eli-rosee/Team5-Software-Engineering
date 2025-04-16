@@ -31,7 +31,9 @@
      - python3 main.py
     
   5. Test running the generator (you can use a different terminal window and must be inside project folder)
-     - python3 python_trafficgenarator_v2.py (Note: If you dont run the trafficgenrator, our program will automatically run a trafficgentor from the playaction screen for you)
+     - python3 python_trafficgenarator_v2.py
+         - (Note: If you dont run the trafficgenrator as a separate file, our program will automatically run a trafficgenerator from the playaction screen for you)
+         - (This trafficgenerator ran in the play action screen is for test purposes only and does not communicate with UDP sockets)
 
   6. What happens in main.py?
      - First 3 seconds is the loading screen
